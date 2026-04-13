@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="theme-color" content="#050b1a">
+<title>SKY Network</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+Mono:wght@400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --dark:#050b1a;--darker:#030810;--blue:#0a84ff;--cyan:#00d4ff;--gold:#ffd60a;
+  --card:#0d1b2e;--card2:#0f2040;--border:rgba(0,212,255,0.15);--border2:rgba(0,212,255,0.3);
+  --text:#e8f4ff;--muted:#7ba7c7;--green:#22c55e;--red:#ef4444;
+  --font:'Outfit',sans-serif;--brand:'Rajdhani',sans-serif;--mono:'Noto Sans Mono',monospace;--display:'Syne',sans-serif;
+}
+html{-webkit-text-size-adjust:100%;}
+body{background:var(--dark);color:var(--text);font-family:var(--font);min-height:100vh;min-height:100dvh;width:100%;max-width:520px;margin:0 auto;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,0);}
+@media (min-width:480px){body{max-width:min(520px,100%);}}
+.screen{display:none;min-height:100vh;animation:fadeIn .35s ease;}
+.screen.active{display:flex;flex-direction:column;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── STARS BG ─── */
+.stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(0,132,255,.07) 0%,transparent 60%),
+  radial-gradient(ellipse at 80% 20%,rgba(0,212,255,.05) 0%,transparent 50%),
+  radial-gradient(ellipse at 60% 80%,rgba(255,214,10,.03) 0%,transparent 40%);}
+.rel{position:relative;z-index:1;}
+
+/* ─── AUTH SCREENS ─── */
+.auth-wrap{flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 24px;position:relative;z-index:1;}
+.auth-logo{text-align:center;margin-bottom:36px;}
+.auth-logo-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#0a84ff,#00d4ff);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 12px;
+  font-size:32px;box-shadow:0 0 40px rgba(0,212,255,.3);}
+.auth-logo-name{font-family:var(--brand);font-size:24px;font-weight:900;letter-spacing:3px;}
+.auth-logo-name span{color:var(--cyan);}
+.auth-logo-sub{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+
+.auth-card{background:rgba(13,27,46,.9);border:1px solid var(--border2);border-radius:24px;padding:28px 24px;backdrop-filter:blur(20px);}
+.auth-title{font-family:var(--brand);font-size:20px;font-weight:700;margin-bottom:6px;}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+
+.field{margin-bottom:14px;}
+.field-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-weight:600;}
+.field-wrap{position:relative;}
+.field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+.field-input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;
+  padding:13px 14px 13px 42px;color:var(--text);font-family:var(--font);font-size:15px;outline:none;
+  transition:border-color .2s;}
+.field-input:focus{border-color:var(--cyan);}
+.field-input::placeholder{color:rgba(123,167,199,.5);}
+.field-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;color:var(--muted);}
+
+.auth-btn{width:100%;height:50px;border-radius:14px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#0a84ff,#00d4ff);color:#000;
+  font-family:var(--brand);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  margin-top:8px;transition:all .2s;position:relative;overflow:hidden;}
+.auth-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  transform:translateX(-100%);animation:shine 3s infinite;}
+@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+.auth-btn:active{transform:scale(.98);}
+.auth-btn.secondary{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid var(--border2);}
+.auth-btn.secondary::after{display:none;}
+
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.auth-link{text-align:center;font-size:13px;color:var(--muted);margin-top:16px;}
+.auth-link a{color:var(--cyan);cursor:pointer;font-weight:600;text-decoration:none;}
+
+.terms{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5;}
+.terms span{color:var(--cyan);}
+
+.field-err{font-size:11px;color:var(--red);margin-top:4px;display:none;}
+.field-err.show{display:block;}
+
+.strength-bar{height:4px;border-radius:2px;margin-top:6px;background:rgba(255,255,255,.1);overflow:hidden;}
+.strength-fill{height:100%;border-radius:2px;transition:all .3s;width:0%;}
+
+/* ─── APP SCREEN ─── */
+.app-wrap{flex:1;display:flex;flex-direction:column;padding-bottom:72px;position:relative;z-index:1;}
+
+/* HEADER */
+.header{background:rgba(4,13,31,.95);border-bottom:1px solid var(--border);padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);}
+.brand{font-family:var(--brand);font-size:17px;font-weight:700;letter-spacing:2px;}
+.brand span{color:var(--cyan);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.signal{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hbtn{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;position:relative;}
+.badge{position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:var(--gold);
+  border-radius:50%;font-size:8px;font-weight:700;color:#000;display:flex;align-items:center;justify-content:center;
+  font-family:var(--brand);}
+
+/* PAGES */
+.page{display:none;animation:fadeIn .3s ease;overflow-y:auto;}
+.page.active{display:block;}
+
+/* HERO */
+.hero{padding:20px 18px 14px;background:linear-gradient(180deg,rgba(0,132,255,.08) 0%,transparent 100%);}
+.greet{font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.uname{font-family:var(--brand);font-size:20px;font-weight:700;margin-top:2px;}
+
+/* BALANCE CARD */
+.bal-card{margin:14px 18px;background:linear-gradient(135deg,#0a1929,#0d2240 50%,#081520);
+  border:1px solid var(--border2);border-radius:20px;padding:22px;position:relative;overflow:hidden;}
+.bal-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,212,255,.12) 0%,transparent 70%);}
+.bl{font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.ba{font-family:var(--brand);font-size:38px;font-weight:900;color:var(--gold);margin:6px 0 2px;
+  text-shadow:0 0 30px rgba(255,214,10,.4);}
+.bc{font-size:13px;color:var(--cyan);letter-spacing:2px;font-weight:600;}
+.bu{font-size:12px;color:var(--muted);margin-top:2px;}
+/* Home action buttons - 2 buttons only */
+.bal-acts{display:flex;gap:10px;margin-top:18px;}
+.bbtn{flex:1;height:44px;border-radius:10px;border:none;cursor:pointer;
+  font-family:var(--font);font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:all .2s;position:relative;overflow:hidden;}
+.bbtn.p{background:linear-gradient(135deg,#0a84ff,#00d4ff);color:#000;}
+.bbtn.g{background:linear-gradient(135deg,#22c55e,#16a34a);color:#000;}
+.bbtn:active{transform:scale(.97);}
+
+/* SECTION */
+.sec-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;padding:0 18px;margin-bottom:10px;font-weight:600;}
+
+/* MINE CARD */
+.mine-card{margin:18px 18px 0;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;}
+.mine-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mine-ttl{font-family:var(--brand);font-size:13px;font-weight:700;color:var(--cyan);}
+.ms-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.ms-badge.on{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.ms-badge.off{background:rgba(255,214,10,.1);color:var(--gold);border:1px solid rgba(255,214,10,.2);}
+.ms-badge.done{background:rgba(0,212,255,.15);color:var(--cyan);border:1px solid var(--border2);}
+
+.ring-wrap{display:flex;justify-content:center;}
+.ring-cont{position:relative;width:150px;height:150px;}
+.ring-svg{width:150px;height:150px;transform:rotate(-90deg);}
+.rbg{fill:none;stroke:rgba(0,212,255,.1);stroke-width:8;}
+.rfill{fill:none;stroke:url(#rg);stroke-width:8;stroke-linecap:round;
+  stroke-dasharray:415;stroke-dashoffset:415;transition:stroke-dashoffset .2s linear;}
+.ring-ctr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.rpct{font-family:var(--brand);font-size:24px;font-weight:900;color:var(--cyan);
+  transition:color .6s ease;text-shadow:0 0 12px rgba(0,212,255,.5);animation:pctGlow 3s ease-in-out infinite;}
+@keyframes pctGlow{0%,100%{text-shadow:0 0 8px rgba(0,212,255,.4);}50%{text-shadow:0 0 22px rgba(0,212,255,.9),0 0 40px rgba(0,132,255,.3);}}
+.rpct.gold{color:var(--gold);animation:pctGlowGold 1.5s ease-in-out infinite;}
+@keyframes pctGlowGold{0%,100%{text-shadow:0 0 8px rgba(255,214,10,.5);}50%{text-shadow:0 0 24px rgba(255,214,10,1),0 0 50px rgba(255,150,0,.5);}}
+.rsub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+.rcoin{font-size:11px;color:var(--gold);font-weight:600;margin-top:3px;}
+
+/* Orbit animations */
+.ring-outer-orbit,.ring-outer-orbit2{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;pointer-events:none;}
+.orbit-arm,.orbit-arm2{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;}
+.ring-dot{width:7px;height:7px;background:var(--cyan);border-radius:50%;position:absolute;top:0;left:50%;transform:translateX(-50%);opacity:0;box-shadow:0 0 8px var(--cyan);}
+.ring-dot2{width:5px;height:5px;background:var(--gold);border-radius:50%;position:absolute;top:0;left:50%;transform:translateX(-50%);opacity:0;box-shadow:0 0 6px var(--gold);}
+.ring-outer-orbit.active{animation:orbit1 4s linear infinite;}
+.ring-outer-orbit2.active{animation:orbit2 6s linear infinite;}
+.ring-outer-orbit.active .ring-dot,.ring-outer-orbit2.active .ring-dot2{opacity:1;}
+@keyframes orbit1{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes orbit2{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+.ring-cont.mining{filter:drop-shadow(0 0 10px rgba(0,212,255,.3));}
+
+.mine-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;}
+.mst{background:rgba(0,212,255,.05);border-radius:10px;padding:10px;text-align:center;border:1px solid var(--border);}
+.mst-v{font-family:var(--brand);font-size:14px;font-weight:700;}
+.mst-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+.mine-btn{width:100%;height:46px;border-radius:12px;border:none;cursor:pointer;
+  font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  margin-top:14px;transition:all .2s;position:relative;overflow:hidden;}
+.mine-btn.start{background:linear-gradient(135deg,#0a84ff,#00d4ff);color:#000;}
+.mine-btn.stop{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.mine-btn.start::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+  transform:translateX(-100%);animation:shine 3s infinite;}
+.mine-btn:active{transform:scale(.98);}
+@keyframes claimPulse{0%,100%{box-shadow:0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 20px rgba(34,197,94,.6)}}
+.claim-anim{background:linear-gradient(135deg,#22c55e,#16a34a)!important;color:#000!important;animation:claimPulse 1.5s infinite;}
+
+/* MIGRATE BUTTON ON HOME */
+.migrate-home-btn{width:100%;height:46px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#22c55e,#16a34a);color:#000;
+  font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  margin-top:10px;transition:all .2s;position:relative;overflow:hidden;}
+.migrate-home-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+  transform:translateX(-100%);animation:shine 3s infinite;}
+.migrate-home-btn:active{transform:scale(.98);}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 18px 0;}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.scard-icon{font-size:20px;margin-bottom:6px;}
+.scard-v{font-family:var(--brand);font-size:17px;font-weight:700;}
+.scard-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+/* REF CARD */
+.ref-card{margin:0 18px 14px;background:linear-gradient(135deg,rgba(0,132,255,.15),rgba(0,212,255,.1));
+  border:1px solid var(--border2);border-radius:16px;padding:16px;}
+.ref-code{background:var(--darker);border:1px solid var(--border);border-radius:10px;padding:12px;
+  font-family:var(--brand);font-size:17px;font-weight:700;letter-spacing:4px;color:var(--cyan);text-align:center;margin:10px 0;}
+.ref-copy{width:100%;height:38px;border-radius:10px;border:1px solid var(--border2);
+  background:rgba(0,212,255,.1);color:var(--cyan);font-family:var(--brand);
+  font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
+.ref-row{display:flex;gap:8px;}
+.ref-row .ref-copy{flex:1;}
+
+/* REFERRED USERS LIST */
+.ref-users-list{margin-top:12px;}
+.ref-user-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(0,0,0,.2);border-radius:10px;margin-bottom:6px;}
+.ref-user-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-family:var(--brand);font-size:11px;font-weight:700;color:#000;flex-shrink:0;}
+.ref-user-name{font-size:13px;font-weight:500;}
+.ref-user-date{font-size:10px;color:var(--muted);margin-top:1px;}
+
+/* WALLET */
+.w-total{margin:14px 18px;background:linear-gradient(135deg,#0a1929,#0d2240);
+  border:1px solid var(--border2);border-radius:18px;padding:20px;}
+.wt-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;}
+.wt-a{font-family:var(--brand);font-size:34px;font-weight:900;color:var(--gold);margin:6px 0 2px;}
+.wt-u{font-size:12px;color:var(--muted);}
+.w-addr-box{margin:0 18px 14px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.w-addr-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.w-addr-val{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.3px;word-break:break-all;line-height:1.7;}
+.w-copy-btn{width:100%;height:36px;border-radius:8px;border:1px solid var(--border2);background:rgba(0,212,255,.08);
+  color:var(--cyan);font-family:var(--brand);font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;margin-top:8px;}
+
+.tx-list{margin:0 18px;}
+.tx-item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);}
+.tx-item:last-child{border-bottom:none;}
+.tx-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.tx-ico.m{background:rgba(0,212,255,.1);}
+.tx-ico.s{background:rgba(239,68,68,.1);}
+.tx-ico.r{background:rgba(34,197,94,.1);}
+.tx-info{flex:1;}
+.tx-type{font-size:13px;font-weight:600;}
+.tx-date{font-size:11px;color:var(--muted);margin-top:1px;}
+.tx-amt{font-family:var(--brand);font-size:14px;font-weight:700;}
+.tx-amt.p{color:var(--green);}
+.tx-amt.n{color:var(--red);}
+
+/* EXTERNAL TRANSFER */
+.transfer-card{margin:0 18px 14px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;}
+.transfer-title{font-family:var(--brand);font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:4px;}
+.transfer-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+.transfer-input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;
+  padding:13px 14px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;transition:border-color .2s;margin-bottom:10px;}
+.transfer-input:focus{border-color:var(--cyan);}
+.transfer-input::placeholder{color:rgba(123,167,199,.4);font-family:var(--font);}
+.transfer-fee{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;}
+.transfer-fee span:first-child{color:var(--muted);}
+.transfer-btn{width:100%;height:46px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#0a84ff,#00d4ff);color:#000;
+  font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:all .2s;
+  margin-top:8px;position:relative;overflow:hidden;}
+.transfer-btn:active{transform:scale(.98);}
+.transfer-warning{font-size:10px;color:var(--gold);margin-top:10px;line-height:1.5;opacity:.8;}
+
+/* MIGRATE PAGE */
+.migrate-hero{margin:16px 18px;background:linear-gradient(135deg,#0a1929,#0f2a15);border:1px solid rgba(34,197,94,.25);border-radius:20px;padding:22px;position:relative;overflow:hidden;}
+.migrate-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.15),transparent 70%);}
+.mig-h{font-family:var(--brand);font-size:16px;font-weight:700;color:#22c55e;margin-bottom:4px;}
+.mig-sub{font-size:12px;color:var(--muted);line-height:1.5;}
+.mig-steps{margin:0 18px 14px;}
+.mig-step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
+.mig-step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0a84ff,#00d4ff);display:flex;align-items:center;justify-content:center;font-family:var(--brand);font-size:13px;font-weight:700;color:#000;flex-shrink:0;}
+.mig-step-body{}
+.mig-step-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.mig-step-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.mig-result{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin:0 18px 14px;text-align:center;display:none;}
+.mig-result.show{display:block;animation:fadeIn .3s ease;}
+.mig-result-icon{font-size:42px;margin-bottom:10px;}
+.mig-result-title{font-family:var(--brand);font-size:18px;font-weight:700;margin-bottom:6px;}
+.mig-result-sub{font-size:12px;color:var(--muted);line-height:1.5;}
+.mig-history{margin:0 18px;}
+.mig-hi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;}
+.mig-hi-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.mig-hi-net{font-size:11px;font-weight:600;color:var(--cyan);}
+.mig-hi-amt{font-family:var(--brand);font-size:14px;font-weight:700;color:var(--green);}
+.mig-hi-hash{font-family:var(--mono);font-size:9px;color:var(--muted);word-break:break-all;}
+.mig-hi-date{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* PROFILE */
+.prof-hdr{padding:22px 18px 14px;text-align:center;}
+.prof-av{width:76px;height:76px;border-radius:50%;margin:0 auto 12px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--brand);font-size:26px;font-weight:700;color:#000;border:3px solid var(--border2);}
+.prof-name{font-family:var(--brand);font-size:19px;font-weight:700;}
+.prof-id{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.prof-lvl{display:inline-flex;align-items:center;gap:6px;background:rgba(255,214,10,.1);
+  border:1px solid rgba(255,214,10,.2);color:var(--gold);padding:4px 14px;border-radius:20px;
+  font-size:11px;font-weight:600;margin-top:10px;text-transform:uppercase;letter-spacing:1px;}
+.prof-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 18px;}
+.ps-i{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;}
+.ps-v{font-family:var(--brand);font-size:17px;font-weight:700;color:var(--cyan);}
+.ps-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+.lvl-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.lvl-bar-bg{height:6px;border-radius:3px;background:rgba(0,212,255,.1);overflow:hidden;margin:8px 0 4px;}
+.lvl-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .5s ease;}
+.menu-list{margin:0 18px;}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.menu-item:last-child{border-bottom:none;}
+.menu-l{display:flex;align-items:center;gap:12px;}
+.menu-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.ico-b{background:rgba(0,132,255,.15);}
+.ico-g{background:rgba(255,214,10,.1);}
+.ico-gr{background:rgba(34,197,94,.1);}
+.ico-r{background:rgba(239,68,68,.1);}
+.menu-txt{font-size:14px;font-weight:500;}
+.menu-sbt{font-size:11px;color:var(--muted);margin-top:1px;}
+.menu-arr{color:var(--muted);font-size:17px;}
+.logout-btn{margin:18px 18px 0;width:calc(100% - 36px);height:46px;border-radius:12px;border:1px solid rgba(239,68,68,.3);
+  background:rgba(239,68,68,.1);color:var(--red);font-family:var(--brand);
+  font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
+.logout-btn:active{transform:scale(.98);}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;
+  background:rgba(4,13,31,.97);border-top:1px solid var(--border);
+  display:grid;grid-template-columns:repeat(5,1fr);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0));
+  z-index:200;backdrop-filter:blur(20px);}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  cursor:pointer;padding:4px 0;transition:all .2s;opacity:.5;}
+.nav-item.active{opacity:1;}
+.nav-icon{font-size:20px;}
+.nav-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;font-weight:600;font-family:var(--brand);}
+.nav-item.active .nav-lbl{color:var(--cyan);}
+
+/* TASKS */
+.task-card{margin:0 18px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;gap:14px;align-items:flex-start;}
+.task-ico{font-size:28px;flex-shrink:0;}
+.task-body{flex:1;}
+.task-t{font-size:14px;font-weight:600;margin-bottom:4px;}
+.task-d{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.task-btn{height:34px;padding:0 14px;border-radius:8px;border:1px solid var(--border2);background:rgba(0,212,255,.1);
+  color:var(--cyan);font-family:var(--brand);font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
+.task-btn.done{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3);}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease;}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:24px 24px 0 0;padding:24px 22px;width:100%;max-height:90vh;overflow-y:auto;position:relative;}
+.modal-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 18px;}
+.modal-close{position:absolute;top:18px;right:18px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:var(--muted);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-title{font-family:var(--brand);font-size:18px;font-weight:700;margin-bottom:18px;}
+.m-input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:border-color .2s;margin-bottom:10px;}
+.m-input:focus{border-color:var(--cyan);}
+.m-input::placeholder{color:rgba(123,167,199,.4);}
+.m-btn{width:100%;height:50px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,#0a84ff,#00d4ff);color:#000;font-family:var(--brand);font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:all .2s;}
+.m-btn:active{transform:scale(.98);}
+.pin-overlay{align-items:center;}
+.pin-overlay .modal{border-radius:24px;max-width:340px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:rgba(13,27,46,.97);border:1px solid var(--border2);border-radius:12px;
+  padding:12px 20px;font-size:13px;color:var(--text);z-index:999;transition:transform .3s;white-space:nowrap;backdrop-filter:blur(20px);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* NOTIFICATION PANEL */
+.notif-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;backdrop-filter:blur(4px);}
+.notif-overlay.open{display:block;}
+.notif-panel{position:fixed;top:0;right:-320px;width:300px;height:100vh;background:var(--card);
+  border-left:1px solid var(--border);z-index:400;transition:right .3s ease;overflow-y:auto;padding-top:env(safe-area-inset-top,0);}
+.notif-panel.open{right:0;}
+.notif-panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:1;}
+.notif-panel-title{font-family:var(--brand);font-size:15px;font-weight:700;}
+.notif-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;}
+.notif-list{padding:8px 0;}
+.notif-item{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .2s;}
+.notif-item:hover{background:rgba(0,212,255,.04);}
+.notif-ico{width:36px;height:36px;border-radius:10px;background:rgba(0,132,255,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.notif-ico.gold{background:rgba(255,214,10,.1);}
+.notif-ico.green{background:rgba(34,197,94,.1);}
+.notif-body{flex:1;}
+.notif-title-t{font-size:13px;font-weight:600;margin-bottom:2px;}
+.notif-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+.notif-time{font-size:10px;color:rgba(123,167,199,.5);margin-top:4px;}
+.notif-empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;}
+.notif-clear{width:calc(100% - 32px);margin:8px 16px;height:36px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;}
+
+/* MINING COMPLETE BANNER */
+.mine-complete-banner{position:fixed;top:-120px;left:50%;transform:translateX(-50%);width:calc(100% - 36px);max-width:484px;
+  background:linear-gradient(135deg,rgba(34,197,94,.2),rgba(0,212,255,.15));border:1px solid rgba(34,197,94,.4);
+  border-radius:16px;padding:16px 20px;z-index:600;transition:top .5s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px);
+  display:flex;align-items:center;gap:14px;}
+.mine-complete-banner.show{top:16px;}
+.mcb-icon{font-size:30px;}
+.mcb-title{font-family:var(--brand);font-size:15px;font-weight:700;}
+.mcb-sub{font-size:12px;color:var(--muted);}
+
+/* RIPPLE */
+.ripple-wrap{overflow:hidden;}
+.ripple-circle{position:absolute;border-radius:50%;background:rgba(255,255,255,.2);animation:ripple .7s linear forwards;pointer-events:none;}
+@keyframes ripple{0%{transform:scale(0);opacity:.5}100%{transform:scale(1);opacity:0}}
+
+/* KYC OVERLAY */
+.kyc-overlay{position:fixed;inset:0;background:var(--dark);z-index:700;display:none;flex-direction:column;overflow-y:auto;}
+.kyc-overlay.open{display:flex;}
+.kyc-wrap{flex:1;padding-bottom:32px;}
+.kyc-header{background:rgba(4,13,31,.95);border-bottom:1px solid var(--border);padding:14px 18px;
+  display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);}
+.kyc-back{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text);}
+.kyc-hdr-title{font-family:var(--brand);font-size:16px;font-weight:700;}
+.kyc-progress{display:flex;align-items:center;gap:6px;padding:16px 18px;}
+.kyc-step-dot{flex:1;height:4px;border-radius:2px;background:var(--border);}
+.kyc-step-dot.active{background:var(--cyan);}
+.kyc-step-dot.done{background:var(--green);}
+.kyc-section{margin:0 18px 14px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;}
+.kyc-section-title{font-family:var(--brand);font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:6px;}
+.kyc-section-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:14px;}
+.kyc-field{margin-bottom:12px;}
+.kyc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-weight:600;}
+.kyc-input{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:border-color .2s;}
+.kyc-input:focus{border-color:var(--cyan);}
+.kyc-input::placeholder{color:rgba(123,167,199,.4);}
+.kyc-nav-btns{display:flex;gap:10px;margin:0 18px 14px;}
+.kyc-next-btn{flex:1;height:46px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#0a84ff,#00d4ff);color:#000;font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:all .2s;}
+.kyc-back-btn{height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--border2);cursor:pointer;background:transparent;color:var(--cyan);font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.kyc-photo-btn{width:100%;border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;background:rgba(0,0,0,.2);transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.kyc-photo-btn.done{border-color:var(--green);border-style:solid;}
+.kyc-preview{max-width:100%;max-height:160px;border-radius:10px;display:none;margin-top:8px;object-fit:cover;}
+.kyc-overlay-label{text-align:center;}
+.kyc-face-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:14px;}
+.kyc-face-box{width:160px;height:160px;border-radius:50%;border:2px dashed var(--border);background:rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;}
+.kyc-face-box.done{border-color:var(--green);border-style:solid;}
+.kyc-face-frame{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(0,212,255,.3);pointer-events:none;}
+.kyc-cam-feed{width:100%;height:100%;object-fit:cover;display:none;}
+.kyc-cam-feed.active{display:block;}
+.kyc-check-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.kyc-check-row:last-child{border-bottom:none;}
+.kyc-check-ico{font-size:18px;flex-shrink:0;}
+.kyc-check-label{flex:1;font-size:13px;}
+.kyc-check-val{font-size:12px;font-weight:600;}
+.kyc-check-val.pending{color:var(--muted);}
+.kyc-check-val.ok{color:var(--green);}
+.kyc-check-val.fail{color:var(--red);}
+.kyc-check-val.checking{color:var(--gold);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.kyc-warn{background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.2);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--gold);margin-top:8px;line-height:1.5;}
+
+/* COMING SOON */
+.coming-soon-card{margin:20px 18px;background:var(--card);border:1px dashed var(--border);border-radius:18px;padding:40px 24px;text-align:center;}
+.cs-icon{font-size:48px;margin-bottom:12px;}
+.cs-title{font-family:var(--brand);font-size:20px;font-weight:700;color:var(--muted);letter-spacing:2px;}
+.cs-sub{font-size:13px;color:rgba(123,167,199,.5);margin-top:8px;}
+
+/* SUPPORT */
+.support-card{margin:0 18px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px;text-decoration:none;cursor:pointer;}
+.support-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.support-body{flex:1;}
+.support-lbl{font-size:13px;font-weight:600;}
+.support-val{font-size:12px;color:var(--cyan);margin-top:2px;font-family:var(--mono);}
+
+/* BELL ANIMATION */
+@keyframes bellShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-15deg)}40%{transform:rotate(15deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}}
+.bell-ring{animation:bellShake .6s ease;}
+
+/* COIN FLOATS */
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.4)}}
+.coin-float{position:fixed;font-size:22px;pointer-events:none;z-index:800;animation:floatUp .8s ease forwards;}
+
+/* PRICE CARD */
+.price-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;}
+.pc-icon{font-size:22px;flex-shrink:0;}
+.pc-body{flex:1;}
+.pc-name{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.pc-price{font-family:var(--brand);font-size:15px;font-weight:700;margin:2px 0;}
+.pc-chg{font-size:10px;font-weight:600;}
+.pc-chg.up{color:var(--green);}
+.pc-chg.down{color:var(--red);}
+
+/* KYC LOCKED STATE */
+.kyc-locked{margin:20px 18px;background:rgba(255,214,10,.06);border:1px solid rgba(255,214,10,.2);border-radius:18px;padding:24px;text-align:center;}
+.kyc-lock-icon{font-size:40px;margin-bottom:10px;}
+.kyc-lock-title{font-family:var(--brand);font-size:16px;font-weight:700;color:var(--gold);margin-bottom:6px;}
+.kyc-lock-sub{font-size:12px;color:var(--muted);line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<!-- ─── LOADING ─── -->
+<div class="screen active" id="screen-loading" style="align-items:center;justify-content:center;">
+  <div style="text-align:center;position:relative;z-index:1;">
+    <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#0a84ff,#00d4ff);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;box-shadow:0 0 40px rgba(0,212,255,.3);animation:pulse 2s infinite;">⛏</div>
+    <div style="font-family:var(--brand);font-size:22px;font-weight:900;letter-spacing:3px;">SKY <span style="color:var(--cyan);">NETWORK</span></div>
+    <div style="font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:6px;">Mining Platform</div>
+    <div style="margin-top:28px;width:48px;height:3px;border-radius:2px;background:linear-gradient(90deg,#0a84ff,#00d4ff);margin-left:auto;margin-right:auto;animation:shine 1.5s infinite;"></div>
+  </div>
+</div>
+
+<!-- ─── LOGIN ─── -->
+<div class="screen" id="screen-login">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">⛏</div>
+      <div class="auth-logo-name">SKY <span>NETWORK</span></div>
+      <div class="auth-logo-sub">Decentralized Mining Platform</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-sub">Login to continue mining SKY</div>
+      <div class="field">
+        <div class="field-label">Username or Email</div>
+        <div class="field-wrap">
+          <span class="field-icon">👤</span>
+          <input class="field-input" id="login-user" placeholder="Username or email" type="text" autocomplete="username"/>
+        </div>
+        <div class="field-err" id="err-login-user">Enter your username or email</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Password</div>
+        <div class="field-wrap">
+          <span class="field-icon">🔒</span>
+          <input class="field-input" id="login-pass" placeholder="Password" type="password" autocomplete="current-password"/>
+          <span class="field-eye" onclick="togglePwd('login-pass',this)">👁️</span>
+        </div>
+        <div class="field-err" id="err-login-pass">Incorrect password</div>
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Login to Mine</button>
+      <div class="auth-divider">or</div>
+      <button class="auth-btn secondary" onclick="showScreen('screen-register')">Create Account</button>
+      <div class="auth-link">New to SKY? <a onclick="showScreen('screen-register')">Sign up free</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── REGISTER ─── -->
+<div class="screen" id="screen-register">
+  <div class="auth-wrap" style="padding-top:20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+      <button onclick="showScreen('screen-login')" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:0;">←</button>
+      <div>
+        <div style="font-family:var(--brand);font-size:16px;font-weight:700;">Create Account</div>
+        <div style="font-size:12px;color:var(--muted);">Join Sky Network & start mining</div>
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="field">
+        <div class="field-label">Full Name</div>
+        <div class="field-wrap">
+          <span class="field-icon">👤</span>
+          <input class="field-input" id="reg-name" placeholder="Your full name" type="text"/>
+        </div>
+        <div class="field-err" id="err-reg-name">Name is required</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Username</div>
+        <div class="field-wrap">
+          <span class="field-icon">🏷️</span>
+          <input class="field-input" id="reg-username" placeholder="skyuser123" type="text" oninput="checkUsername(this)"/>
+        </div>
+        <div class="field-err" id="err-reg-username">Username taken or too short (min 4 chars)</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Email Address</div>
+        <div class="field-wrap">
+          <span class="field-icon">📧</span>
+          <input class="field-input" id="reg-email" placeholder="you@example.com" type="email"/>
+        </div>
+        <div class="field-err" id="err-reg-email">Enter a valid email address</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Password</div>
+        <div class="field-wrap">
+          <span class="field-icon">🔒</span>
+          <input class="field-input" id="reg-pass" placeholder="Min 6 characters" type="password" oninput="checkStrength(this)"/>
+          <span class="field-eye" onclick="togglePwd('reg-pass',this)">👁️</span>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="str-fill"></div></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;" id="str-label">Enter password</div>
+        <div class="field-err" id="err-reg-pass">Password must be at least 6 characters</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Confirm Password</div>
+        <div class="field-wrap">
+          <span class="field-icon">🔒</span>
+          <input class="field-input" id="reg-pass2" placeholder="Repeat password" type="password"/>
+          <span class="field-eye" onclick="togglePwd('reg-pass2',this)">👁️</span>
+        </div>
+        <div class="field-err" id="err-reg-pass2">Passwords do not match</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Referral Code (Optional)</div>
+        <div class="field-wrap">
+          <span class="field-icon">🎁</span>
+          <input class="field-input" id="reg-ref" placeholder="e.g. SKY4821" type="text"/>
+        </div>
+      </div>
+      <button class="auth-btn" onclick="doRegister()">Create Account & Start Mining</button>
+      <div class="auth-link">Already have an account? <a onclick="showScreen('screen-login')">Login</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MAIN APP ─── -->
+<div class="screen" id="screen-app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand">SKY <span>NETWORK</span></div>
+    <div class="header-right">
+      <div class="signal"></div>
+      <div class="hbtn" id="notif-bell" onclick="toggleNotifPanel()">🔔<div class="badge" id="notif-badge" style="display:none;">0</div></div>
+    </div>
+  </div>
+
+  <div class="app-wrap">
+    <!-- HOME PAGE -->
+    <div class="page active" id="pg-home">
+      <div class="hero">
+        <div class="greet">Welcome back</div>
+        <div class="uname" id="display-name">Sky Miner</div>
+      </div>
+
+      <!-- BALANCE CARD — simplified, no send/receive -->
+      <div class="bal-card">
+        <div class="bl">SKY Balance</div>
+        <div class="ba" id="home-bal">0.00</div>
+        <div class="bc">SKY COINS</div>
+        <div class="bu" id="home-usd">≈ $0.0000 USD</div>
+        <div class="bal-acts">
+          <button class="bbtn p" onclick="toggleMine()" id="home-mine-btn">⛏ Start Mining</button>
+          <button class="bbtn g" onclick="doQuickMigrateAll()">🔄 Migrate to Wallet</button>
+        </div>
+      </div>
+
+      <div class="sec-title">Mining Engine</div>
+      <div class="mine-card">
+        <div class="mine-hdr">
+          <div class="mine-ttl">⛏ SKY Mining Engine</div>
+          <div class="ms-badge off" id="ms-badge">IDLE</div>
+        </div>
+        <div class="ring-wrap">
+          <div class="ring-cont" id="ring-cont">
+            <div class="ring-outer-orbit" id="orbit1">
+              <div class="orbit-arm" style="transform:rotate(45deg)"><div class="ring-dot"></div></div>
+            </div>
+            <div class="ring-outer-orbit2" id="orbit2">
+              <div class="orbit-arm2" style="transform:rotate(200deg)"><div class="ring-dot2"></div></div>
+            </div>
+            <svg class="ring-svg" viewBox="0 0 150 150">
+              <defs>
+                <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0a84ff"/><stop offset="100%" stop-color="#00d4ff"/>
+                </linearGradient>
+                <linearGradient id="rg-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffd60a"/><stop offset="100%" stop-color="#ff9500"/>
+                </linearGradient>
+              </defs>
+              <circle fill="none" stroke="rgba(0,212,255,0.05)" stroke-width="1" cx="75" cy="75" r="72" stroke-dasharray="4 6"/>
+              <circle fill="none" stroke="rgba(255,214,10,0.07)" stroke-width="1" cx="75" cy="75" r="58" stroke-dasharray="2 8"/>
+              <circle class="rbg" cx="75" cy="75" r="66"/>
+              <circle class="rfill" id="ring" cx="75" cy="75" r="66"/>
+            </svg>
+            <div class="ring-ctr">
+              <div class="rpct" id="rpct">0%</div>
+              <div class="rsub">Progress</div>
+              <div class="rcoin" id="rcoin">+0.0000 SKY</div>
+            </div>
+          </div>
+        </div>
+        <div class="mine-stats">
+          <div class="mst"><div class="mst-v" id="stat-hs">0</div><div class="mst-l">H/s Rate</div></div>
+          <div class="mst"><div class="mst-v" id="stat-t">24:00:00</div><div class="mst-l">Time Left</div></div>
+          <div class="mst"><div class="mst-v">1.00</div><div class="mst-l">Reward</div></div>
+        </div>
+        <button class="mine-btn start" id="mine-btn" onclick="toggleMine()">⛏ Start Mining</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="scard"><div class="scard-icon">🏆</div><div class="scard-v" id="tot-mined">0</div><div class="scard-l">Total Mined</div></div>
+        <div class="scard"><div class="scard-icon">📅</div><div class="scard-v" id="days-active">0</div><div class="scard-l">Days Active</div></div>
+      </div>
+
+      <!-- REFERRAL SECTION -->
+      <div style="padding:16px 18px 10px;">
+        <div class="sec-title" style="padding:0;margin-bottom:10px;">Referral Program</div>
+      </div>
+      <div class="ref-card">
+        <div style="font-size:13px;color:var(--muted);">Invite friends & earn 10% bonus SKY</div>
+        <div id="ref-bonus-msg" style="font-size:12px;color:var(--green);margin-top:8px;display:none;"></div>
+        <div class="ref-code" id="ref-code">SKY0000</div>
+        <div class="ref-row">
+          <button type="button" class="ref-copy" onclick="copyRef()">📋 Copy Code</button>
+          <button type="button" class="ref-copy" onclick="copyRefLink()">🔗 Copy Link</button>
+        </div>
+        <!-- Referred users list -->
+        <div id="ref-users-section" style="margin-top:12px;display:none;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:600;">Friends Joined</div>
+          <div class="ref-users-list" id="ref-users-list"></div>
+        </div>
+      </div>
+      <div style="height:14px;"></div>
+    </div>
+
+    <!-- WALLET PAGE -->
+    <div class="page" id="pg-wallet">
+      <div style="padding:18px 18px 0;">
+        <div style="font-family:var(--brand);font-size:22px;font-weight:700;letter-spacing:1px;">My Wallet</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">SKY Network · Secure Vault</div>
+      </div>
+      <div class="w-total">
+        <div class="wt-l">Wallet Balance</div>
+        <div class="wt-a" id="wal-bal">0.00 SKY</div>
+        <div class="wt-u" id="wal-usd">≈ $0.0000 USD</div>
+      </div>
+
+      <!-- Wallet Address -->
+      <div class="w-addr-box">
+        <div class="w-addr-label">Your SKY Wallet Address</div>
+        <div class="w-addr-val" id="wal-addr-display">—</div>
+        <button class="w-copy-btn" onclick="copyWalletAddr()">📋 Copy Address</button>
+      </div>
+
+      <!-- External Transfer to MetaMask -->
+      <div style="padding:0 18px 8px;"><div class="sec-title" style="padding:0;">Send to Web3 Wallet</div></div>
+      <div class="transfer-card">
+        <div class="transfer-title">🦊 Send to MetaMask / Web3</div>
+        <div class="transfer-sub">Transfer your SKY to any Ethereum-compatible wallet address.</div>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Recipient Ethereum Address</div>
+        <input class="transfer-input" id="ext-recv-addr" placeholder="0x... Ethereum address" autocomplete="off"/>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Amount (SKY)</div>
+        <input class="transfer-input" id="ext-amt" placeholder="e.g. 10.00" type="number" min="0" style="font-family:var(--font);font-size:14px;" oninput="calcExtFee()"/>
+        <div style="background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;">
+          <div class="transfer-fee"><span>Network Fee</span><span>~0.0025 SKY</span></div>
+          <div class="transfer-fee"><span>You Send</span><span id="ext-send-display">0.0000 SKY</span></div>
+          <div class="transfer-fee"><span>Recipient Gets</span><span id="ext-recv-display">0.0000 SKY</span></div>
+        </div>
+        <button class="transfer-btn" onclick="doExternalTransfer()">Send to Wallet ›</button>
+        <div class="transfer-warning">⚠️ Only send to Ethereum mainnet addresses. Sending to wrong network may cause permanent loss.</div>
+      </div>
+
+      <div style="padding:0 18px 8px;margin-top:4px;"><div class="sec-title" style="padding:0;">Transaction History</div></div>
+      <div class="tx-list" id="tx-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">No transactions yet. Start mining!</div>
+      </div>
+      <div style="height:14px;"></div>
+    </div>
+
+    <!-- TASKS PAGE -->
+    <div class="page" id="pg-tasks">
+      <div style="padding:18px 18px 6px;">
+        <div style="font-family:var(--brand);font-size:19px;font-weight:700;">Tasks</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Complete tasks and stay connected</div>
+      </div>
+      <div style="height:8px;"></div>
+      <div class="task-card">
+        <div class="task-ico">✈️</div>
+        <div class="task-body">
+          <div class="task-t">Follow us on Telegram</div>
+          <div class="task-d">Join our Telegram community for updates and announcements.</div>
+          <a href="https://t.me/skynetwork" target="_blank" rel="noopener noreferrer" class="task-btn" style="display:inline-block;line-height:34px;text-decoration:none;text-align:center;margin-right:8px;">Open Telegram</a>
+          <button type="button" class="task-btn" id="btn-task-tg" onclick="completeTask('telegram')">Mark done</button>
+        </div>
+      </div>
+      <div class="task-card">
+        <div class="task-ico">𝕏</div>
+        <div class="task-body">
+          <div class="task-t">Follow us on Twitter / X</div>
+          <div class="task-d">Follow for roadmap updates and network announcements.</div>
+          <a href="https://twitter.com/skynetwork" target="_blank" rel="noopener noreferrer" class="task-btn" style="display:inline-block;line-height:34px;text-decoration:none;text-align:center;margin-right:8px;">Open Twitter</a>
+          <button type="button" class="task-btn" id="btn-task-tw" onclick="completeTask('twitter')">Mark done</button>
+        </div>
+      </div>
+      <div style="height:14px;"></div>
+    </div>
+
+    <!-- MIGRATION PAGE -->
+    <div class="page" id="pg-migrate">
+      <div style="padding:18px 18px 0;">
+        <div style="font-family:var(--brand);font-size:22px;font-weight:700;letter-spacing:1px;">Migrate Coins</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">Transfer mined SKY to your wallet</div>
+      </div>
+
+      <div style="margin:14px 18px;background:linear-gradient(135deg,#0a1929,#0d2240);border:1px solid var(--border2);border-radius:18px;padding:18px;">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;">Available to Migrate</div>
+        <div style="font-family:var(--brand);font-size:32px;font-weight:900;color:var(--gold);margin:6px 0 2px;" id="mig-avail-bal">0.00</div>
+        <div style="font-size:13px;color:var(--cyan);letter-spacing:2px;font-weight:600;">SKY COINS</div>
+      </div>
+
+      <div class="migrate-hero">
+        <div class="mig-h">🔄 One-Click Migration</div>
+        <div class="mig-sub">Instantly migrate all your mined SKY into your wallet. Your balance updates after confirmation.</div>
+      </div>
+
+      <div class="sec-title">How It Works</div>
+      <div class="mig-steps">
+        <div class="mig-step">
+          <div class="mig-step-num">1</div>
+          <div class="mig-step-body">
+            <div class="mig-step-title">Click Migrate Now</div>
+            <div class="mig-step-desc">Tap the button below. Your entire mined SKY balance will be queued for migration.</div>
+          </div>
+        </div>
+        <div class="mig-step">
+          <div class="mig-step-num">2</div>
+          <div class="mig-step-body">
+            <div class="mig-step-title">Confirmation</div>
+            <div class="mig-step-desc">The migration is confirmed on the SKY chain within seconds. A small gas fee of 0.0012 SKY applies.</div>
+          </div>
+        </div>
+        <div class="mig-step">
+          <div class="mig-step-num">3</div>
+          <div class="mig-step-body">
+            <div class="mig-step-title">Coins in Wallet</div>
+            <div class="mig-step-desc">Balance updates instantly. You can then transfer to MetaMask or any Web3 wallet.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Migrate All Button -->
+      <div style="margin:0 18px 14px;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(0,212,255,.08));border:1px solid rgba(34,197,94,.3);border-radius:16px;padding:18px;text-align:center;">
+        <div style="font-family:var(--brand);font-size:15px;font-weight:700;color:var(--green);margin-bottom:4px;">Migrate All Mined Coins</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Move your entire mining balance to your SKY wallet with one click.</div>
+        <button style="width:100%;height:50px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,#22c55e,#16a34a);color:#000;font-family:var(--brand);font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:all .2s;position:relative;overflow:hidden;" onclick="doQuickMigrateAll()">⚡ Migrate All Now</button>
+      </div>
+
+      <!-- Migration Result -->
+      <div class="mig-result" id="mig-result">
+        <div class="mig-result-icon" id="mig-result-icon">⏳</div>
+        <div class="mig-result-title" id="mig-result-title">Processing...</div>
+        <div class="mig-result-sub" id="mig-result-sub">Your migration is being confirmed.</div>
+      </div>
+
+      <div class="sec-title">Migration History</div>
+      <div class="mig-history" id="mig-history">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">No migrations yet</div>
+      </div>
+      <div style="height:14px;"></div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="pg-profile">
+      <div class="prof-hdr">
+        <div class="prof-av" id="prof-av">SM</div>
+        <div class="prof-name" id="prof-name">Sky Miner</div>
+        <div class="prof-id" id="prof-id" style="font-family:'Noto Sans Mono',monospace;font-size:10px;letter-spacing:.3px;word-break:break-all;max-width:260px;margin:0 auto;color:var(--muted);">0x···</div>
+        <div class="prof-lvl">⭐ <span id="prof-lvl-txt">Starter</span> Miner</div>
+      </div>
+      <div class="prof-stats">
+        <div class="ps-i"><div class="ps-v" id="ps-mined">0</div><div class="ps-l">SKY Earned</div></div>
+        <div class="ps-i"><div class="ps-v" id="ps-days">0</div><div class="ps-l">Days Active</div></div>
+        <div class="ps-i"><div class="ps-v" id="ps-refs">0</div><div class="ps-l">Referrals</div></div>
+      </div>
+      <div style="padding:0 18px;margin-bottom:10px;">
+        <div class="sec-title" style="padding:0;margin-bottom:10px;">Mining Level Progress</div>
+        <div class="lvl-card">
+          <div style="display:flex;justify-content:space-between;font-size:12px;">
+            <span style="color:var(--muted);" id="lvl-label">Starter → Bronze</span>
+            <span style="color:var(--cyan);font-family:var(--brand);" id="lvl-nums">0/10 SKY</span>
+          </div>
+          <div class="lvl-bar-bg"><div class="lvl-bar-fill" id="lvl-bar" style="width:0%;"></div></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;" id="lvl-hint">Mine 10 SKY to reach Bronze</div>
+        </div>
+      </div>
+
+      <div class="sec-title">Settings</div>
+      <div class="menu-list">
+        <!-- Security — Coming Soon -->
+        <div class="menu-item" onclick="showToast('🔐 Security features coming soon!')">
+          <div class="menu-l"><div class="menu-ico ico-b">🔐</div><div><div class="menu-txt">Security</div><div class="menu-sbt" style="color:var(--gold);">Coming Soon</div></div></div>
+          <div class="menu-arr">›</div>
+        </div>
+        <!-- KYC -->
+        <div class="menu-item" onclick="openKycModal()">
+          <div class="menu-l"><div class="menu-ico ico-g">✅</div><div><div class="menu-txt">KYC Verification</div><div class="menu-sbt" id="kyc-status">Not verified</div></div></div>
+          <div class="menu-arr">›</div>
+        </div>
+        <!-- Referrals -->
+        <div class="menu-item" onclick="switchPage('home')">
+          <div class="menu-l"><div class="menu-ico ico-gr">👥</div><div><div class="menu-txt">My Referrals</div><div class="menu-sbt" id="ref-count-lbl">0 friends joined</div></div></div>
+          <div class="menu-arr">›</div>
+        </div>
+        <!-- Support -->
+        <div class="menu-item" onclick="showSupportModal()">
+          <div class="menu-l"><div class="menu-ico ico-b">💬</div><div><div class="menu-txt">Support</div><div class="menu-sbt">Contact & Collaboration</div></div></div>
+          <div class="menu-arr">›</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+      <div style="height:20px;"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="switchPage('home')">
+      <div class="nav-icon">🏠</div><div class="nav-lbl">Home</div>
+    </div>
+    <div class="nav-item" id="nav-migrate" onclick="switchPage('migrate')">
+      <div class="nav-icon">🔄</div><div class="nav-lbl">Migrate</div>
+    </div>
+    <div class="nav-item" id="nav-wallet" onclick="switchPage('wallet')">
+      <div class="nav-icon">💰</div><div class="nav-lbl">Wallet</div>
+    </div>
+    <div class="nav-item" id="nav-tasks" onclick="switchPage('tasks')">
+      <div class="nav-icon">✅</div><div class="nav-lbl">Tasks</div>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="switchPage('profile')">
+      <div class="nav-icon">👤</div><div class="nav-lbl">Profile</div>
+    </div>
+  </nav>
+</div>
+
+<!-- ─── NOTIFICATION PANEL ─── -->
+<div class="notif-overlay" id="notif-overlay" onclick="closeNotifPanel()"></div>
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-panel-hdr">
+    <div class="notif-panel-title">🔔 Notifications</div>
+    <button class="notif-close" onclick="closeNotifPanel()">✕</button>
+  </div>
+  <div class="notif-list" id="notif-list">
+    <div class="notif-empty">No notifications yet</div>
+  </div>
+  <button class="notif-clear" onclick="clearNotifications()">Clear All</button>
+</div>
+
+<!-- MINING COMPLETE BANNER -->
+<div class="mine-complete-banner" id="mine-complete-banner">
+  <div class="mcb-icon">🎉</div>
+  <div><div class="mcb-title">Mining Complete!</div><div class="mcb-sub">+1.0000 SKY earned · Tap Claim to restart</div></div>
+</div>
+
+<!-- KYC FULL SCREEN -->
+<div class="kyc-overlay" id="kyc-overlay">
+  <div class="kyc-wrap">
+    <div class="kyc-header">
+      <button class="kyc-back" onclick="closeKycModal()">←</button>
+      <div>
+        <div class="kyc-hdr-title">✅ KYC Verification</div>
+        <div style="font-size:10px;color:var(--muted);" id="kyc-step-label">Step 1 of 3 · Basic Info</div>
+      </div>
+    </div>
+    <div class="kyc-progress">
+      <div class="kyc-step-dot active" id="kd0"></div>
+      <div class="kyc-step-dot" id="kd1"></div>
+      <div class="kyc-step-dot" id="kd2"></div>
+    </div>
+
+    <!-- KYC LOCKED (no referrals) -->
+    <div id="kyc-locked-view" style="display:none;">
+      <div class="kyc-locked">
+        <div class="kyc-lock-icon">🔒</div>
+        <div class="kyc-lock-title">KYC Locked</div>
+        <div class="kyc-lock-sub">You need at least <strong style="color:var(--cyan);">1 referral</strong> to unlock KYC verification.<br><br>Share your referral code and invite a friend to get started.</div>
+      </div>
+      <div style="margin:0 18px;">
+        <button style="width:100%;height:46px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#0a84ff,#00d4ff);color:#000;font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;" onclick="closeKycModal();switchPage('home')">Share Referral Code</button>
+      </div>
+    </div>
+
+    <!-- STEP 1: Basic Info -->
+    <div id="kyc-s1" style="display:none;">
+      <div class="kyc-section">
+        <div class="kyc-section-title">Personal Information</div>
+        <div class="kyc-section-sub">Enter your legal name exactly as it appears on your government-issued ID.</div>
+        <div class="kyc-field">
+          <div class="kyc-label">Full Legal Name</div>
+          <input class="kyc-input" id="kyc-name" placeholder="As on your ID document"/>
+        </div>
+        <div class="kyc-field">
+          <div class="kyc-label">Date of Birth</div>
+          <input class="kyc-input" id="kyc-dob" type="date"/>
+        </div>
+        <div class="kyc-field">
+          <div class="kyc-label">Country of Residence</div>
+          <select class="kyc-input" id="kyc-country" style="cursor:pointer;">
+            <option value="">Select country…</option>
+            <option>Pakistan</option><option>United States</option><option>United Kingdom</option>
+            <option>United Arab Emirates</option><option>Saudi Arabia</option><option>Canada</option>
+            <option>Australia</option><option>Germany</option><option>India</option>
+            <option>Bangladesh</option><option>Turkey</option><option>Nigeria</option>
+            <option>South Africa</option><option>Indonesia</option><option>Malaysia</option>
+            <option>Philippines</option><option>Other</option>
+          </select>
+        </div>
+        <div class="kyc-field">
+          <div class="kyc-label">Nationality</div>
+          <input class="kyc-input" id="kyc-nationality" placeholder="e.g. Pakistani"/>
+        </div>
+      </div>
+      <div class="kyc-nav-btns">
+        <button class="kyc-next-btn" onclick="kycNext(1)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: ID Upload -->
+    <div id="kyc-s2" style="display:none;">
+      <div class="kyc-section">
+        <div class="kyc-section-title">Identity Document</div>
+        <div class="kyc-section-sub">Upload your government-issued ID. Document must be valid and not expired.</div>
+        <div class="kyc-field">
+          <div class="kyc-label">Document Type</div>
+          <select class="kyc-input" id="kyc-doctype" style="cursor:pointer;">
+            <option value="">Select type…</option>
+            <option value="passport">Passport</option>
+            <option value="national_id">National ID Card (CNIC)</option>
+            <option value="driving">Driving License</option>
+          </select>
+        </div>
+        <div class="kyc-field">
+          <div class="kyc-label">Document Number</div>
+          <input class="kyc-input" id="kyc-docnum" placeholder="e.g. 35202-1234567-9" style="font-family:'Noto Sans Mono',monospace;font-size:13px;"/>
+        </div>
+        <div class="kyc-field">
+          <div class="kyc-label">Expiry Date</div>
+          <input class="kyc-input" id="kyc-expiry" type="date"/>
+        </div>
+        <div class="kyc-field">
+          <div class="kyc-label">Front of ID</div>
+          <button class="kyc-photo-btn" id="btn-id-front" onclick="document.getElementById('file-id-front').click()">
+            <img class="kyc-preview" id="prev-id-front"/>
+            <div class="kyc-overlay-label">
+              <div style="font-size:28px;">📷</div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--cyan);">Tap to Upload Front</div>
+            </div>
+          </button>
+          <input type="file" id="file-id-front" accept="image/*" capture="environment" style="display:none;" onchange="handleIdFile('front',this)"/>
+        </div>
+        <div class="kyc-field">
+          <div class="kyc-label">Back of ID</div>
+          <button class="kyc-photo-btn" id="btn-id-back" onclick="document.getElementById('file-id-back').click()">
+            <img class="kyc-preview" id="prev-id-back"/>
+            <div class="kyc-overlay-label">
+              <div style="font-size:28px;">📷</div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--cyan);">Tap to Upload Back</div>
+            </div>
+          </button>
+          <input type="file" id="file-id-back" accept="image/*" capture="environment" style="display:none;" onchange="handleIdFile('back',this)"/>
+        </div>
+        <div class="kyc-warn">⚠️ Each document number can only be used once. Duplicates are detected and rejected.</div>
+      </div>
+      <div class="kyc-nav-btns">
+        <button class="kyc-back-btn" onclick="kycBack(2)">← Back</button>
+        <button class="kyc-next-btn" onclick="kycNext(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Verification/Selfie -->
+    <div id="kyc-s3" style="display:none;">
+      <div class="kyc-section">
+        <div class="kyc-section-title">Face Verification</div>
+        <div class="kyc-section-sub">Take a clear selfie. Your face will be matched against your ID document.</div>
+        <div class="kyc-face-wrap">
+          <div class="kyc-face-box" id="face-box" onclick="captureSelfie()">
+            <div class="kyc-face-frame"></div>
+            <video class="kyc-cam-feed" id="kyc-cam" autoplay playsinline muted></video>
+            <img id="kyc-selfie-preview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0;"/>
+            <div id="face-placeholder" style="text-align:center;">
+              <div style="font-size:36px;">🤳</div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--cyan);margin-top:6px;">Tap to open camera</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:4px;">Position face in frame</div>
+            </div>
+          </div>
+        </div>
+        <input type="file" id="file-selfie" accept="image/*" capture="user" style="display:none;" onchange="handleSelfieFileKyc(this)"/>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="kyc-back-btn" onclick="stopCameraKyc()" style="flex:1;font-size:10px;" id="btn-cam-stop" style="display:none;">✕ Cancel Cam</button>
+          <button class="kyc-next-btn" onclick="document.getElementById('file-selfie').click()" style="background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid var(--border2);font-size:10px;flex:1;">📁 Upload Photo</button>
+          <button class="kyc-next-btn" id="btn-capture-selfie" onclick="captureFrameKyc()" style="display:none;font-size:10px;">✅ Capture</button>
+        </div>
+
+        <div style="background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:14px;">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Guidelines</div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8;">
+            ✓ Face clearly visible, no mask or sunglasses<br>
+            ✓ Good lighting — no shadows<br>
+            ✓ Look directly at camera<br>
+            ✓ No filters or editing
+          </div>
+        </div>
+      </div>
+
+      <!-- Automated checks + submit -->
+      <div class="kyc-section" id="kyc-checks-section" style="display:none;">
+        <div class="kyc-section-title">Running Checks</div>
+        <div class="kyc-check-row"><div class="kyc-check-ico">🆔</div><div class="kyc-check-label">Document duplicate check</div><div class="kyc-check-val pending" id="chk-dup">Waiting…</div></div>
+        <div class="kyc-check-row"><div class="kyc-check-ico">🤳</div><div class="kyc-check-label">Face ↔ ID match</div><div class="kyc-check-val pending" id="chk-face">Waiting…</div></div>
+        <div class="kyc-check-row"><div class="kyc-check-ico">📅</div><div class="kyc-check-label">Document not expired</div><div class="kyc-check-val pending" id="chk-exp">Waiting…</div></div>
+        <div class="kyc-check-row"><div class="kyc-check-ico">🌍</div><div class="kyc-check-label">Country eligibility</div><div class="kyc-check-val pending" id="chk-country">Waiting…</div></div>
+        <div class="kyc-check-row"><div class="kyc-check-ico">🔞</div><div class="kyc-check-label">Age verification (18+)</div><div class="kyc-check-val pending" id="chk-age">Waiting…</div></div>
+      </div>
+      <div id="kyc-result-area"></div>
+
+      <div class="kyc-nav-btns" id="kyc-submit-btns">
+        <button class="kyc-back-btn" onclick="kycBack(3)">← Back</button>
+        <button class="kyc-next-btn" onclick="submitKycInApp()" id="kyc-selfie-next" disabled style="opacity:.5;cursor:not-allowed;">Submit KYC</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPORT MODAL -->
+<div class="modal-overlay" id="modal-support">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal('support')">✕</button>
+    <div class="modal-title">💬 Support & Contact</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5;">We're here to help. Reach out for support or business inquiries.</div>
+
+    <div class="support-card" onclick="window.open('mailto:support@skynetwork.com')">
+      <div class="support-ico ico-b">📧</div>
+      <div class="support-body">
+        <div class="support-lbl">Customer Support</div>
+        <div class="support-val">support@skynetwork.com</div>
+      </div>
+      <div style="color:var(--muted);font-size:17px;">›</div>
+    </div>
+    <div class="support-card" onclick="window.open('mailto:promo@skynetwork.com')">
+      <div class="support-ico ico-g">🤝</div>
+      <div class="support-body">
+        <div class="support-lbl">Collaboration & Paid Promotion</div>
+        <div class="support-val">promo@skynetwork.com</div>
+      </div>
+      <div style="color:var(--muted);font-size:17px;">›</div>
+    </div>
+    <div style="height:8px;"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════
+   EVM ADDRESS GENERATION
+   ════════════════════════════════ */
+function generateEvmAddress(seed) {
+  var h = 0x811c9dc5;
+  for (var i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  var h2 = 0xdeadbeef;
+  for (var j = seed.length - 1; j >= 0; j--) { h2 ^= seed.charCodeAt(j) * (j + 7); h2 = Math.imul(h2, 0x45d9f3b) >>> 0; }
+  var parts = [];
+  var mix = [h, h2, h ^ h2, h2 ^ (h >>> 3), (h + h2) >>> 0, (h * 31 + h2) >>> 0];
+  for (var k = 0; k < mix.length; k++) { parts.push(mix[k].toString(16).padStart(8, '0').slice(0, 7)); }
+  var raw = parts.join('').slice(0, 40);
+  var checksummed = '';
+  for (var c = 0; c < raw.length; c++) { var nibble = parseInt(raw[c], 16); checksummed += (nibble >= 8) ? raw[c].toUpperCase() : raw[c]; }
+  return '0x' + checksummed;
+}
+function getReceiveAddress(u) {
+  if (!u) return '';
+  if (u.evmAddress) return u.evmAddress;
+  return generateEvmAddress((u.username || u.uid || '') + (u.email || '') + (u.createdAt || 0));
+}
+function normalizeRefCode(code) { return code ? String(code).trim().replace(/\s+/g,'').toUpperCase() : ''; }
+function findReferrerKey(data, refRaw) {
+  var refNorm = normalizeRefCode(refRaw);
+  if (!refNorm) return null;
+  var alts = [refNorm];
+  if (/^\d{4,5}$/.test(refNorm)) alts.push('SKY' + refNorm);
+  for (var u2 in data.users) {
+    var ru = data.users[u2];
+    var rc = normalizeRefCode(ru.refCode || '');
+    var uidc = normalizeRefCode(ru.uid || '');
+    for (var i = 0; i < alts.length; i++) { if (alts[i] && (rc === alts[i] || uidc === alts[i])) return u2; }
+  }
+  return null;
+}
+
+/* ════════════════════════════════
+   DATABASE
+   ════════════════════════════════ */
+var DB = {
+  STORE: 'sky_network_db',
+  currentUser: null,
+  _load: function() {
+    var empty = {users:{},sessions:{}};
+    try {
+      var data = JSON.parse(localStorage.getItem(this.STORE)) || empty;
+      if (!data.users) data.users = {};
+      if (!data.sessions) data.sessions = {};
+      if (data.sessions.currentUser && data.users[data.sessions.currentUser]) this.currentUser = data.sessions.currentUser;
+      else this.currentUser = null;
+      return data;
+    } catch(e) { this.currentUser = null; return empty; }
+  },
+  _save: function(data) { try { localStorage.setItem(this.STORE, JSON.stringify(data)); } catch(e) {} },
+  setCurrentUser: function(ukey) {
+    var data = this._load();
+    data.sessions = data.sessions || {};
+    if (ukey && data.users[ukey]) { data.sessions.currentUser = ukey; this.currentUser = ukey; }
+    else { delete data.sessions.currentUser; this.currentUser = null; }
+    this._save(data);
+  },
+  register: function(name, username, email, password, refCodeRaw) {
+    var data = this._load();
+    username = username.toLowerCase().trim();
+    email = email.toLowerCase().trim();
+    if (data.users[username]) return {ok:false, msg:'Username already taken'};
+    for (var u in data.users) { if (data.users[u].email === email) return {ok:false, msg:'Email already registered'}; }
+    var uid = 'SKY' + Math.floor(1000 + Math.random() * 8999);
+    var evmAddress = generateEvmAddress(username + email + Date.now());
+    var refNorm = normalizeRefCode(refCodeRaw);
+    var refBonus = 0; var referredByCode = null; var refInvalid = false;
+    if (refNorm) {
+      var uRef = findReferrerKey(data, refCodeRaw);
+      if (uRef && uRef !== username) {
+        data.users[uRef].balance = +(data.users[uRef].balance + 0.5).toFixed(4);
+        data.users[uRef].referrals = (data.users[uRef].referrals || 0) + 1;
+        // Track referred username
+        if (!data.users[uRef].referredUsers) data.users[uRef].referredUsers = [];
+        data.users[uRef].referredUsers.push({username: username, name: name, date: new Date().toLocaleDateString()});
+        var rtx = {type:'ref', label:'Referral reward ('+username+' joined)', amt:0.5, date:new Date().toLocaleDateString()};
+        data.users[uRef].transactions = data.users[uRef].transactions || [];
+        data.users[uRef].transactions.unshift(rtx);
+        refBonus = 0.5;
+        referredByCode = data.users[uRef].refCode || data.users[uRef].uid;
+      } else { refInvalid = true; }
+    }
+    data.users[username] = {
+      name: name, username: username, email: email,
+      password: this._hash(password),
+      uid: uid, refCode: uid,
+      evmAddress: evmAddress,
+      referredByCode: referredByCode,
+      balance: refBonus, totalMined: refBonus,
+      transactions: refBonus > 0 ? [{type:'ref', label:'Referral signup bonus', amt:refBonus, date:new Date().toLocaleDateString()}] : [],
+      createdAt: Date.now(), daysActive: 1, referrals: 0,
+      referredUsers: [],
+      migrations: [],
+      miningStart: null, miningProgress: 0,
+      tasks: { telegram: false, twitter: false },
+      kycStatus: 'none'
+    };
+    this._save(data);
+    this.setCurrentUser(username);
+    return {ok:true, uid:uid, username:username, refBonus:refBonus, refInvalid:refInvalid};
+  },
+  login: function(identifier, password) {
+    var data = this._load();
+    identifier = identifier.toLowerCase().trim();
+    var user = null, ukey = null;
+    for (var u in data.users) {
+      if (data.users[u].username === identifier || data.users[u].email === identifier) { user = data.users[u]; ukey = u; break; }
+    }
+    if (!user) return {ok:false, msg:'Account not found'};
+    if (user.password !== this._hash(password)) return {ok:false, msg:'Incorrect password'};
+    var now = Date.now();
+    if (!data.users[ukey].evmAddress) data.users[ukey].evmAddress = generateEvmAddress((data.users[ukey].username||ukey) + (data.users[ukey].email||'') + (data.users[ukey].createdAt||0));
+    if (!data.users[ukey].referredUsers) data.users[ukey].referredUsers = [];
+    if (!data.users[ukey].migrations) data.users[ukey].migrations = [];
+    data.users[ukey].daysActive = Math.floor((now - user.createdAt) / 86400000) + 1;
+    data.sessions = data.sessions || {};
+    data.sessions.currentUser = ukey;
+    this.currentUser = ukey;
+    this._save(data);
+    return {ok:true, username:ukey};
+  },
+  logout: function() { var data = this._load(); data.sessions = data.sessions || {}; delete data.sessions.currentUser; this.currentUser = null; this._save(data); },
+  getUser: function(ukey) { var data = this._load(); return data.users[ukey] || null; },
+  updateUser: function(ukey, changes) { var data = this._load(); if (!data.users[ukey]) return; Object.assign(data.users[ukey], changes); this._save(data); },
+  addTransaction: function(ukey, tx) { var data = this._load(); if (!data.users[ukey]) return; data.users[ukey].transactions = data.users[ukey].transactions || []; data.users[ukey].transactions.unshift(tx); this._save(data); },
+  _hash: function(str) { var h = 0; for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; } return 'h' + Math.abs(h).toString(36); }
+};
+
+/* ════════════
+   MINING ENGINE
+   ════════════ */
+var mineInterval = null;
+var mineActive = false;
+function getMiningState() {
+  if (!DB.currentUser) return null;
+  var u = DB.getUser(DB.currentUser);
+  if (!u || !u.miningStart) return {progress:0, elapsed:0};
+  var elapsed = Math.floor((Date.now() - u.miningStart) / 1000);
+  var total = 24 * 3600;
+  return {progress: Math.min(elapsed / total, 1), elapsed: elapsed};
+}
+function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+function startMineUI() {
+  mineActive = true;
+  var btn = document.getElementById('mine-btn');
+  btn.textContent = '⛏ Mining in Progress…';
+  btn.className = 'mine-btn start ripple-wrap';
+  btn.disabled = true;
+  document.getElementById('ms-badge').textContent = 'ACTIVE';
+  document.getElementById('ms-badge').className = 'ms-badge on';
+  document.getElementById('stat-hs').textContent = '142';
+  var rc = document.getElementById('ring-cont');
+  if (rc) rc.classList.add('mining');
+  var o1 = document.getElementById('orbit1'); var o2 = document.getElementById('orbit2');
+  if (o1) o1.classList.add('active');
+  if (o2) o2.classList.add('active');
+  if (mineInterval) clearInterval(mineInterval);
+  mineInterval = setInterval(updateMineRing, 250);
+  updateMineRing();
+  // Update home button
+  var hbtn = document.getElementById('home-mine-btn');
+  if (hbtn) { hbtn.textContent = '⛏ Mining…'; hbtn.disabled = true; }
+}
+
+function stopMineUI() {
+  mineActive = false;
+  clearInterval(mineInterval);
+  var btn = document.getElementById('mine-btn');
+  btn.textContent = '⛏ Start Mining';
+  btn.className = 'mine-btn start ripple-wrap';
+  btn.disabled = false;
+  btn.onclick = toggleMine;
+  document.getElementById('ms-badge').textContent = 'IDLE';
+  document.getElementById('ms-badge').className = 'ms-badge off';
+  document.getElementById('stat-hs').textContent = '0';
+  var rc = document.getElementById('ring-cont');
+  if (rc) rc.classList.remove('mining');
+  var o1 = document.getElementById('orbit1'); var o2 = document.getElementById('orbit2');
+  if (o1) o1.classList.remove('active');
+  if (o2) o2.classList.remove('active');
+  var hbtn = document.getElementById('home-mine-btn');
+  if (hbtn) { hbtn.textContent = '⛏ Start Mining'; hbtn.disabled = false; }
+}
+
+var _lastPct = 0;
+function updateMineRing() {
+  var state = getMiningState();
+  if (!state) return;
+  var pct = state.progress * 100;
+  var circumference = 415;
+  document.getElementById('ring').style.strokeDashoffset = circumference - (pct / 100) * circumference;
+  var rpctEl = document.getElementById('rpct');
+  var target = pct;
+  if (Math.abs(target - _lastPct) > 0.005) { animateCounter(rpctEl, _lastPct, target, 200); _lastPct = target; }
+  var ring = document.getElementById('ring');
+  ring.style.stroke = pct >= 90 ? 'url(#rg-gold)' : 'url(#rg)';
+  document.getElementById('rcoin').textContent = '+' + (state.progress).toFixed(4) + ' SKY';
+  var rem = Math.max(0, 24 * 3600 - state.elapsed);
+  var h = Math.floor(rem / 3600), m = Math.floor((rem % 3600) / 60), s = Math.floor(rem % 60);
+  var st = document.getElementById('stat-t');
+  if (st) st.textContent = pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+  if (state.progress >= 1) miningComplete();
+}
+
+function animateCounter(el, from, to, duration) {
+  var start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    var prog = Math.min((ts - start) / duration, 1);
+    var val = from + (to - from) * prog;
+    el.textContent = val.toFixed(2) + '%';
+    if (val >= 90) el.classList.add('gold'); else el.classList.remove('gold');
+    if (prog < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function miningComplete() {
+  clearInterval(mineInterval); mineInterval = null; mineActive = false;
+  var u = DB.getUser(DB.currentUser);
+  if (!u || !u.miningStart) return;
+  var newBal = +(u.balance + 1).toFixed(4);
+  var newTotal = +(u.totalMined + 1).toFixed(4);
+  DB.updateUser(DB.currentUser, {balance: newBal, totalMined: newTotal, miningStart: null, miningProgress: 0});
+  DB.addTransaction(DB.currentUser, {type:'mine', label:'Mining Reward', amt:1, date:new Date().toLocaleDateString()});
+  refreshUI();
+  document.getElementById('ring').style.strokeDashoffset = 0;
+  document.getElementById('rpct').textContent = '100%';
+  document.getElementById('rpct').classList.add('gold');
+  _lastPct = 100;
+  document.getElementById('rcoin').textContent = '+1.0000 SKY';
+  document.getElementById('ms-badge').textContent = 'DONE';
+  document.getElementById('ms-badge').className = 'ms-badge done';
+  document.getElementById('stat-t').textContent = '00:00:00';
+  document.getElementById('stat-hs').textContent = '0';
+  var rc = document.getElementById('ring-cont'); if (rc) rc.classList.remove('mining');
+  var o1 = document.getElementById('orbit1'); var o2 = document.getElementById('orbit2');
+  if (o1) o1.classList.remove('active');
+  if (o2) o2.classList.remove('active');
+  var banner = document.getElementById('mine-complete-banner');
+  if (banner) { banner.classList.add('show'); setTimeout(function(){ banner.classList.remove('show'); }, 5000); }
+  pushNotification('⛏️', 'Mining Complete!', '+1.0000 SKY earned. Tap Claim to start again.', 'gold');
+  var bell = document.getElementById('notif-bell');
+  if (bell) { bell.classList.add('bell-ring'); setTimeout(function(){ bell.classList.remove('bell-ring'); }, 600); }
+  var claimBtn = document.getElementById('mine-btn');
+  claimBtn.textContent = '🎉 Claim & Mine Again';
+  claimBtn.className = 'mine-btn start ripple-wrap claim-anim';
+  claimBtn.disabled = false;
+  claimBtn.onclick = function() {
+    spawnCoinFloats(claimBtn);
+    setTimeout(function(){
+      claimBtn.className = 'mine-btn start ripple-wrap';
+      claimBtn.onclick = toggleMine;
+      document.getElementById('ring').style.strokeDashoffset = 415;
+      document.getElementById('rpct').textContent = '0%';
+      document.getElementById('rpct').classList.remove('gold');
+      _lastPct = 0;
+      document.getElementById('rcoin').textContent = '+0.0000 SKY';
+      document.getElementById('stat-t').textContent = '24:00:00';
+      toggleMine();
+    }, 400);
+  };
+  var hbtn = document.getElementById('home-mine-btn');
+  if (hbtn) { hbtn.textContent = '🎉 Claim Reward'; hbtn.disabled = false; }
+  showToast('🎉 1 SKY mined! Added to your balance.');
+}
+
+function toggleMine() {
+  if (!DB.currentUser) return;
+  if (mineActive) return;
+  DB.updateUser(DB.currentUser, {miningStart: Date.now()});
+  startMineUI();
+  pushNotification('⛏️', 'Mining Started', 'Your mining session has begun. Earn 1 SKY in 24 hours.', 'blue');
+  showToast('⛏️ Mining started! Earn 1 SKY in 24 hours.');
+}
+
+/* ════════════
+   UI HELPERS
+   ════════════ */
+function getRefLinkBase() { try { return window.location.href.split('?')[0].split('#')[0]; } catch(e) { return ''; } }
+
+function refreshUI() {
+  if (!DB.currentUser) return;
+  var u = DB.getUser(DB.currentUser);
+  if (!u) return;
+  var bal = u.balance.toFixed(2);
+  var usd = (u.balance * 0.0042).toFixed(4);
+
+  document.getElementById('display-name').textContent = u.name;
+  document.getElementById('home-bal').textContent = bal;
+  document.getElementById('home-usd').textContent = '≈ $' + usd + ' USD';
+  document.getElementById('wal-bal').textContent = bal + ' SKY';
+  document.getElementById('wal-usd').textContent = '≈ $' + usd + ' USD';
+
+  // Wallet address display
+  var evmAddr = getReceiveAddress(u);
+  var walAddrEl = document.getElementById('wal-addr-display');
+  if (walAddrEl) walAddrEl.textContent = evmAddr;
+
+  document.getElementById('tot-mined').textContent = u.totalMined.toFixed(2);
+  document.getElementById('days-active').textContent = u.daysActive;
+  document.getElementById('ref-code').textContent = u.refCode || '';
+
+  var rb = document.getElementById('ref-bonus-msg');
+  if (u.referredByCode) { rb.style.display = 'block'; rb.textContent = 'You joined with referral code ' + u.referredByCode + ' (+0.5 SKY bonus)'; }
+  else { rb.style.display = 'none'; }
+
+  // Referred users list
+  var refs = u.referredUsers || [];
+  var refSection = document.getElementById('ref-users-section');
+  var refList = document.getElementById('ref-users-list');
+  if (refs.length > 0) {
+    refSection.style.display = 'block';
+    refList.innerHTML = refs.map(function(r) {
+      var initials = (r.name || r.username || '?').split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().slice(0,2) || '?';
+      return '<div class="ref-user-item"><div class="ref-user-avatar">'+initials+'</div><div><div class="ref-user-name">@'+r.username+'</div><div class="ref-user-date">Joined '+r.date+'</div></div></div>';
+    }).join('');
+  } else { refSection.style.display = 'none'; }
+
+  document.getElementById('ref-count-lbl').textContent = (u.referrals || 0) + ' friends joined';
+
+  var kycEl = document.getElementById('kyc-status');
+  if (kycEl) {
+    var ks = u.kycStatus || 'none';
+    kycEl.textContent = ks === 'verified' ? '✅ Verified' : ks === 'pending' ? '⏳ Under Review' : 'Not verified';
+    kycEl.style.color = ks === 'verified' ? 'var(--green)' : ks === 'pending' ? 'var(--gold)' : '';
+  }
+
+  document.getElementById('prof-name').textContent = u.name;
+  var shortAddr = evmAddr.length > 14 ? evmAddr.slice(0,8) + '···' + evmAddr.slice(-6) : evmAddr;
+  document.getElementById('prof-id').textContent = shortAddr;
+  document.getElementById('prof-av').textContent = (u.name || 'SM').split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+  document.getElementById('ps-mined').textContent = u.totalMined.toFixed(2);
+  document.getElementById('ps-days').textContent = u.daysActive;
+  document.getElementById('ps-refs').textContent = u.referrals || 0;
+
+  var level = getLevel(u.totalMined);
+  document.getElementById('prof-lvl-txt').textContent = level.name;
+  document.getElementById('lvl-label').textContent = level.label;
+  document.getElementById('lvl-nums').textContent = u.totalMined.toFixed(1) + '/' + level.max + ' SKY';
+  document.getElementById('lvl-bar').style.width = Math.min(100, (u.totalMined / level.max) * 100).toFixed(1) + '%';
+  document.getElementById('lvl-hint').textContent = 'Mine ' + Math.max(0, level.max - u.totalMined).toFixed(1) + ' more SKY to reach ' + level.next;
+
+  renderTxList(u.transactions);
+  renderMigHistory();
+  refreshTasksUI();
+  updateMigAvailBal();
+
+  var state = getMiningState();
+  if (u.miningStart && state && state.progress < 1) { if (!mineActive) startMineUI(); }
+  else {
+    if (!u.miningStart && mineActive) {
+      stopMineUI();
+      document.getElementById('ring').style.strokeDashoffset = 415;
+      document.getElementById('rpct').textContent = '0%';
+      document.getElementById('rpct').classList.remove('gold');
+      _lastPct = 0;
+      document.getElementById('rcoin').textContent = '+0.0000 SKY';
+    }
+    if (!u.miningStart && !mineActive) {
+      var b = document.getElementById('ms-badge'); var mb = document.getElementById('mine-btn');
+      if (b && b.className.indexOf('off') >= 0 && mb && mb.textContent.indexOf('Start') >= 0)
+        document.getElementById('stat-t').textContent = '24:00:00';
+    }
+  }
+}
+
+function getLevel(mined) {
+  if (mined < 10) return {name:'Starter',label:'Starter → Bronze',max:10,next:'Bronze'};
+  if (mined < 50) return {name:'Bronze',label:'Bronze → Silver',max:50,next:'Silver'};
+  if (mined < 200) return {name:'Silver',label:'Silver → Gold',max:200,next:'Gold'};
+  if (mined < 500) return {name:'Gold',label:'Gold → Platinum',max:500,next:'Platinum'};
+  return {name:'Platinum',label:'Platinum (Max)',max:500,next:'Platinum'};
+}
+
+function renderTxList(txs) {
+  var list = document.getElementById('tx-list');
+  if (!txs || txs.length === 0) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">No transactions yet. Start mining!</div>'; return; }
+  list.innerHTML = txs.slice(0,20).map(function(tx) {
+    var ico = tx.type==='send'?'📤':tx.type==='ref'?'🎁':tx.type==='recv'?'📥':'⛏';
+    var icoClass = tx.type==='send'?'s':tx.type==='ref'||tx.type==='recv'?'r':'m';
+    var amtClass = tx.amt >= 0 ? 'p' : 'n';
+    var amtStr = tx.amt >= 0 ? '+' + tx.amt.toFixed(2) : tx.amt.toFixed(2);
+    return '<div class="tx-item"><div class="tx-ico '+icoClass+'">'+ico+'</div><div class="tx-info"><div class="tx-type">'+(tx.label||'Transaction')+'</div><div class="tx-date">'+tx.date+'</div></div><div class="tx-amt '+amtClass+'">'+amtStr+'</div></div>';
+  }).join('');
+}
+
+function renderMigHistory() {
+  if (!DB.currentUser) return;
+  var u = DB.getUser(DB.currentUser);
+  var migs = u.migrations || [];
+  var el = document.getElementById('mig-history');
+  if (!el) return;
+  if (migs.length === 0) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">No migrations yet</div>'; return; }
+  el.innerHTML = migs.slice(0,10).map(function(m) {
+    return '<div class="mig-hi"><div class="mig-hi-top"><div class="mig-hi-net">SKY Chain Migration</div><div class="mig-hi-amt">+'+m.received.toFixed(4)+' SKY</div></div><div class="mig-hi-hash">'+m.hash+'</div><div class="mig-hi-date">'+m.date+'</div></div>';
+  }).join('');
+}
+
+function switchPage(p) {
+  document.querySelectorAll('.page').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById('pg-' + p).classList.add('active');
+  var navEl = document.getElementById('nav-' + p);
+  if (navEl) navEl.classList.add('active');
+  if (p === 'migrate') updateMigAvailBal();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+
+function openModal(type) { document.getElementById('modal-' + type).classList.add('open'); }
+function closeModal(type) { document.getElementById('modal-' + type).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(function(el) {
+  el.addEventListener('click', function(e){ if (e.target === el) el.classList.remove('open'); });
+});
+
+function togglePwd(id, eye) {
+  var inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  eye.textContent = inp.type === 'password' ? '👁️' : '🙈';
+}
+
+function checkStrength(inp) {
+  var v = inp.value, score = 0;
+  if (v.length >= 6) score++;
+  if (v.length >= 10) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^a-zA-Z0-9]/.test(v)) score++;
+  var colors = ['','#ef4444','#f97316','#eab308','#22c55e'];
+  var labels = ['','Too short','Weak','Fair','Strong'];
+  var fill = document.getElementById('str-fill'); var lbl = document.getElementById('str-label');
+  fill.style.width = (score / 4 * 100) + '%';
+  fill.style.background = colors[score] || colors[1];
+  lbl.textContent = labels[score] || labels[1];
+  lbl.style.color = colors[score] || colors[1];
+}
+
+var takenUsernames = ['admin','sky','skynetwork','root','test'];
+function checkUsername(inp) {
+  var val = inp.value.toLowerCase();
+  var err = document.getElementById('err-reg-username');
+  if (val.length >= 4 && !takenUsernames.includes(val)) err.classList.remove('show');
+}
+
+function showErr(id, show) { var el = document.getElementById(id); if (el) { show ? el.classList.add('show') : el.classList.remove('show'); } }
+
+/* ════════════
+   AUTH ACTIONS
+   ════════════ */
+function doLogin() {
+  var user = document.getElementById('login-user').value.trim();
+  var pass = document.getElementById('login-pass').value;
+  showErr('err-login-user', !user);
+  showErr('err-login-pass', false);
+  if (!user) return;
+  var res = DB.login(user, pass);
+  if (!res.ok) { showErr('err-login-pass', true); showToast('❌ ' + res.msg); return; }
+  showScreen('screen-app');
+  refreshUI();
+}
+
+function doRegister() {
+  var name = document.getElementById('reg-name').value.trim();
+  var username = document.getElementById('reg-username').value.trim().toLowerCase();
+  var email = document.getElementById('reg-email').value.trim();
+  var pass = document.getElementById('reg-pass').value;
+  var pass2 = document.getElementById('reg-pass2').value;
+  var ref = document.getElementById('reg-ref').value.trim();
+  var ok = true;
+  showErr('err-reg-name', !name); if (!name) ok = false;
+  showErr('err-reg-username', username.length < 4 || takenUsernames.includes(username)); if (username.length < 4 || takenUsernames.includes(username)) ok = false;
+  showErr('err-reg-email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ok = false;
+  showErr('err-reg-pass', pass.length < 6); if (pass.length < 6) ok = false;
+  showErr('err-reg-pass2', pass !== pass2); if (pass !== pass2) ok = false;
+  if (!ok) return;
+  var res = DB.register(name, username, email, pass, ref);
+  if (!res.ok) { showToast('❌ ' + res.msg); return; }
+  showScreen('screen-app');
+  refreshUI();
+  if (res.refBonus > 0) showToast('🎁 +0.5 SKY referral bonus!');
+  else if (res.refInvalid) showToast('⚠️ Invalid referral code');
+  else showToast('✅ Welcome to SKY Network!');
+}
+
+function doLogout() { DB.logout(); showScreen('screen-login'); }
+
+function applyRefFromQuery() {
+  try {
+    var q = new URLSearchParams(window.location.search);
+    var r = q.get('ref');
+    if (!r) return;
+    var el = document.getElementById('reg-ref');
+    if (el) el.value = r;
+    showScreen('screen-register');
+  } catch(e) {}
+}
+
+/* ════════════
+   WALLET ACTIONS
+   ════════════ */
+function copyWalletAddr() {
+  var u = DB.getUser(DB.currentUser);
+  if (!u) return;
+  var addr = getReceiveAddress(u);
+  try { navigator.clipboard.writeText(addr); } catch(e) {}
+  showToast('📋 Wallet address copied!');
+}
+
+function copyRef() {
+  var u = DB.getUser(DB.currentUser);
+  if (u && u.refCode) { try { navigator.clipboard.writeText(u.refCode); } catch(e) {} }
+  showToast('📋 Referral code copied!');
+}
+
+function copyRefLink() {
+  var u = DB.getUser(DB.currentUser);
+  if (!u || !u.refCode) return;
+  var url = getRefLinkBase() + '?ref=' + encodeURIComponent(u.refCode);
+  try { navigator.clipboard.writeText(url); } catch(e) {}
+  showToast('🔗 Invite link copied!');
+}
+
+/* ════════════
+   MIGRATION
+   ════════════ */
+function updateMigAvailBal() {
+  if (!DB.currentUser) return;
+  var u = DB.getUser(DB.currentUser);
+  var el = document.getElementById('mig-avail-bal');
+  if (el && u) el.textContent = (u.balance || 0).toFixed(2);
+}
+
+function doQuickMigrateAll() {
+  if (!DB.currentUser) return;
+  var u = DB.getUser(DB.currentUser);
+  if (!u || u.balance <= 0) { showToast('⚠️ No balance to migrate'); return; }
+  var fee = 0.0012;
+  var migrating = u.balance;
+  var received = Math.max(0, +(migrating - fee).toFixed(4));
+  var resultEl = document.getElementById('mig-result');
+  var iconEl = document.getElementById('mig-result-icon');
+  var titleEl = document.getElementById('mig-result-title');
+  var subEl = document.getElementById('mig-result-sub');
+  resultEl.className = 'mig-result show';
+  iconEl.textContent = '⏳';
+  titleEl.textContent = 'Processing Migration…';
+  subEl.textContent = 'Confirming on SKY chain — please wait…';
+  titleEl.style.color = 'var(--gold)';
+  setTimeout(function() {
+    var migs = u.migrations || [];
+    migs.unshift({net:'SKY Chain', src:'Internal', amt:migrating, received:received, date:new Date().toLocaleDateString(), hash:'0x' + Math.random().toString(16).slice(2,18)});
+    DB.updateUser(DB.currentUser, {migrations: migs});
+    DB.addTransaction(DB.currentUser, {type:'recv', label:'Migration: ' + migrating.toFixed(4) + ' SKY', amt:received, date:new Date().toLocaleDateString()});
+    iconEl.textContent = '✅';
+    titleEl.textContent = 'Migration Successful!';
+    titleEl.style.color = 'var(--green)';
+    subEl.textContent = received + ' SKY confirmed in your SKY wallet. Gas fee: ' + fee + ' SKY.';
+    refreshUI();
+    showToast('✅ ' + received + ' SKY migrated to wallet!');
+    pushNotification('🔄', 'Migration Complete', '' + received + ' SKY successfully migrated.', 'green');
+    setTimeout(function() { resultEl.className = 'mig-result'; }, 6000);
+  }, 2500);
+}
+
+/* ════════════
+   EXTERNAL TRANSFER
+   ════════════ */
+function calcExtFee() {
+  var amt = parseFloat(document.getElementById('ext-amt').value) || 0;
+  var fee = 0.0025;
+  var recv = Math.max(0, amt - fee);
+  document.getElementById('ext-send-display').textContent = amt.toFixed(4) + ' SKY';
+  document.getElementById('ext-recv-display').textContent = recv.toFixed(4) + ' SKY';
+}
+
+function doExternalTransfer() {
+  if (!DB.currentUser) return;
+  var addr = document.getElementById('ext-recv-addr').value.trim();
+  var amt = parseFloat(document.getElementById('ext-amt').value);
+  var u = DB.getUser(DB.currentUser);
+  if (!addr) { showToast('Paste your MetaMask or Ethereum address'); return; }
+  if (!/^0x[0-9a-fA-F]{40}$/.test(addr)) { showToast('❌ Invalid Ethereum address'); return; }
+  if (!amt || amt <= 0 || isNaN(amt)) { showToast('Enter a valid amount'); return; }
+  var fee = 0.0025;
+  if (amt > u.balance) { showToast('❌ Insufficient balance'); return; }
+  var received = +(amt - fee).toFixed(4);
+  DB.updateUser(DB.currentUser, {balance: +(u.balance - amt).toFixed(4)});
+  var short = addr.slice(0,8) + '···' + addr.slice(-6);
+  DB.addTransaction(DB.currentUser, {type:'send', label:'Transfer to ' + short, amt:-amt, date:new Date().toLocaleDateString()});
+  refreshUI();
+  document.getElementById('ext-recv-addr').value = '';
+  document.getElementById('ext-amt').value = '';
+  document.getElementById('ext-send-display').textContent = '0.0000 SKY';
+  document.getElementById('ext-recv-display').textContent = '0.0000 SKY';
+  showToast('✅ ' + received + ' SKY sent to ' + short);
+  pushNotification('🦊', 'Transfer Sent', '' + received + ' SKY sent to ' + short, 'green');
+}
+
+/* ════════════
+   TASKS
+   ════════════ */
+function completeTask(id) {
+  if (!DB.currentUser) return;
+  var u = DB.getUser(DB.currentUser);
+  var tasks = u.tasks || {};
+  if (tasks[id]) { showToast('Already completed'); return; }
+  tasks[id] = true;
+  DB.updateUser(DB.currentUser, {tasks: tasks});
+  refreshTasksUI();
+  showToast('✅ Task marked complete');
+}
+
+function refreshTasksUI() {
+  if (!DB.currentUser) return;
+  var u = DB.getUser(DB.currentUser);
+  var t = u.tasks || {};
+  ['telegram','twitter'].forEach(function(id) {
+    var btnId = id === 'telegram' ? 'btn-task-tg' : 'btn-task-tw';
+    var el = document.getElementById(btnId);
+    if (!el) return;
+    if (t[id]) { el.textContent = 'Done ✓'; el.className = 'task-btn done'; el.disabled = true; }
+    else { el.textContent = 'Mark done'; el.className = 'task-btn'; el.disabled = false; el.onclick = function(){ completeTask(id); }; }
+  });
+}
+
+/* ════════════
+   SUPPORT MODAL
+   ════════════ */
+function showSupportModal() { openModal('support'); }
+
+/* ════════════
+   NOTIFICATION SYSTEM
+   ════════════ */
+var notifications = [];
+var notifUnread = 0;
+function pushNotification(ico, title, desc, type) {
+  notifications.unshift({ico:ico, title:title, desc:desc, type:type||'blue', time:new Date(), id:Date.now()});
+  notifUnread++;
+  updateNotifBadge();
+  renderNotifList();
+}
+function updateNotifBadge() {
+  var badge = document.getElementById('notif-badge');
+  if (!badge) return;
+  if (notifUnread > 0) { badge.textContent = notifUnread > 9 ? '9+' : notifUnread; badge.style.display = 'flex'; }
+  else { badge.style.display = 'none'; }
+}
+function renderNotifList() {
+  var list = document.getElementById('notif-list');
+  if (!list) return;
+  if (notifications.length === 0) { list.innerHTML = '<div class="notif-empty">🔕 No notifications yet</div>'; return; }
+  list.innerHTML = notifications.map(function(n) {
+    var icoClass = n.type === 'gold' ? 'gold' : n.type === 'green' ? 'green' : '';
+    var now = new Date(); var diff = Math.floor((now - n.time) / 1000);
+    var timeStr = diff < 60 ? 'Just now' : diff < 3600 ? Math.floor(diff/60)+'m ago' : diff < 86400 ? Math.floor(diff/3600)+'h ago' : n.time.toLocaleDateString();
+    return '<div class="notif-item"><div class="notif-ico '+icoClass+'">'+n.ico+'</div><div class="notif-body"><div class="notif-title-t">'+n.title+'</div><div class="notif-desc">'+n.desc+'</div><div class="notif-time">'+timeStr+'</div></div></div>';
+  }).join('');
+}
+function toggleNotifPanel() {
+  var panel = document.getElementById('notif-panel');
+  var overlay = document.getElementById('notif-overlay');
+  if (panel.classList.contains('open')) { closeNotifPanel(); }
+  else {
+    panel.classList.add('open'); overlay.classList.add('open');
+    notifUnread = 0; updateNotifBadge(); renderNotifList();
+    var bell = document.getElementById('notif-bell');
+    if (bell) { bell.classList.add('bell-ring'); setTimeout(function(){ bell.classList.remove('bell-ring'); }, 600); }
+  }
+}
+function closeNotifPanel() {
+  document.getElementById('notif-panel').classList.remove('open');
+  document.getElementById('notif-overlay').classList.remove('open');
+}
+function clearNotifications() { notifications = []; notifUnread = 0; updateNotifBadge(); renderNotifList(); }
+
+/* ════════════
+   COIN FLOATS
+   ════════════ */
+function spawnCoinFloats(btn) {
+  var rect = btn.getBoundingClientRect();
+  for (var i = 0; i < 6; i++) {
+    var coin = document.createElement('div');
+    coin.className = 'coin-float';
+    coin.textContent = '🪙';
+    coin.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 60) + 'px';
+    coin.style.top = (rect.top + Math.random() * 20) + 'px';
+    coin.style.animationDelay = (i * 0.08) + 's';
+    document.body.appendChild(coin);
+    setTimeout(function(c){ if (c.parentNode) c.parentNode.removeChild(c); }, 900 + i * 80, coin);
+  }
+}
+
+/* ════════════
+   KYC SYSTEM (In-App, with referral lock)
+   ════════════ */
+var kycData = {};
+var kycPhotoFront = null, kycPhotoBack = null, kycSelfie = null;
+var kycCamStream = null;
+var kycCurrentStep = 1;
+
+function openKycModal() {
+  if (!DB.currentUser) return;
+  var u = DB.getUser(DB.currentUser);
+  kycData = {}; kycPhotoFront = null; kycPhotoBack = null; kycSelfie = null; kycCurrentStep = 1;
+  // Reset UI
+  for (var i = 1; i <= 3; i++) { var s = document.getElementById('kyc-s'+i); if (s) s.style.display = 'none'; }
+  document.getElementById('kyc-locked-view').style.display = 'none';
+  // Check referral lock
+  var refs = u.referrals || 0;
+  if (refs < 1) {
+    document.getElementById('kyc-locked-view').style.display = 'block';
+  } else {
+    // Check if already verified/pending
+    var ks = u.kycStatus || 'none';
+    if (ks === 'verified') { showToast('✅ Your KYC is already verified!'); return; }
+    if (ks === 'pending') { showToast('⏳ Your KYC is under review.'); return; }
+    document.getElementById('kyc-s1').style.display = 'block';
+    document.getElementById('kyc-step-label').textContent = 'Step 1 of 3 · Basic Info';
+  }
+  updateKycProgressDots();
+  document.getElementById('kyc-overlay').classList.add('open');
+}
+
+function closeKycModal() {
+  stopCameraKyc();
+  document.getElementById('kyc-overlay').classList.remove('open');
+}
+
+function updateKycProgressDots() {
+  for (var i = 0; i < 3; i++) {
+    var dot = document.getElementById('kd' + i);
+    if (!dot) continue;
+    if (i + 1 < kycCurrentStep) dot.className = 'kyc-step-dot done';
+    else if (i + 1 === kycCurrentStep) dot.className = 'kyc-step-dot active';
+    else dot.className = 'kyc-step-dot';
+  }
+  var labels = ['Step 1 of 3 · Basic Info', 'Step 2 of 3 · ID Upload', 'Step 3 of 3 · Verification'];
+  var labelEl = document.getElementById('kyc-step-label');
+  if (labelEl && labels[kycCurrentStep - 1]) labelEl.textContent = labels[kycCurrentStep - 1];
+}
+
+function kycNext(step) {
+  if (!validateKycStep(step)) return;
+  document.getElementById('kyc-s' + step).style.display = 'none';
+  kycCurrentStep = step + 1;
+  updateKycProgressDots();
+  var next = document.getElementById('kyc-s' + (step + 1));
+  if (next) next.style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function kycBack(step) {
+  stopCameraKyc();
+  document.getElementById('kyc-s' + step).style.display = 'none';
+  kycCurrentStep = step - 1;
+  updateKycProgressDots();
+  var prev = document.getElementById('kyc-s' + (step - 1));
+  if (prev) prev.style.display = 'block';
+}
+
+function validateKycStep(s) {
+  if (s === 1) {
+    var name = (document.getElementById('kyc-name').value || '').trim();
+    var dob = document.getElementById('kyc-dob').value;
+    var country = document.getElementById('kyc-country').value;
+    var nat = (document.getElementById('kyc-nationality').value || '').trim();
+    if (!name || !dob || !country || !nat) { showToast('⚠️ Please fill all fields'); return false; }
+    kycData.name = name; kycData.dob = dob; kycData.country = country; kycData.nationality = nat;
+    var today = new Date(); var birth = new Date(dob);
+    kycData.age = today.getFullYear() - birth.getFullYear() - ((today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) ? 1 : 0);
+  }
+  if (s === 2) {
+    var doctype = document.getElementById('kyc-doctype').value;
+    var docnum = (document.getElementById('kyc-docnum').value || '').trim();
+    var expiry = document.getElementById('kyc-expiry').value;
+    if (!doctype || !docnum || !expiry) { showToast('⚠️ Please fill all document fields'); return false; }
+    if (!kycPhotoFront || !kycPhotoBack) { showToast('⚠️ Please upload front and back of ID'); return false; }
+    kycData.doctype = doctype; kycData.docnum = docnum; kycData.expiry = expiry;
+  }
+  if (s === 3) {
+    if (!kycSelfie) { showToast('⚠️ Please take or upload your selfie'); return false; }
+  }
+  return true;
+}
+
+function handleIdFile(side, input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var src = e.target.result;
+    var prevEl = document.getElementById('prev-id-' + side);
+    var btnEl = document.getElementById('btn-id-' + side);
+    if (prevEl) { prevEl.src = src; prevEl.style.display = 'block'; }
+    if (btnEl) btnEl.classList.add('done');
+    if (side === 'front') kycPhotoFront = src; else kycPhotoBack = src;
+    showToast('✅ ' + (side === 'front' ? 'Front' : 'Back') + ' photo uploaded!');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function captureSelfie() {
+  var vid = document.getElementById('kyc-cam');
+  if (kycCamStream) { captureFrameKyc(); return; }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false}).then(function(stream) {
+    kycCamStream = stream;
+    vid.srcObject = stream;
+    vid.classList.add('active');
+    document.getElementById('face-placeholder').style.display = 'none';
+    document.getElementById('btn-cam-stop').style.display = 'block';
+    document.getElementById('btn-capture-selfie').style.display = 'block';
+  }).catch(function(){ showToast('Camera access denied — upload from gallery'); });
+}
+
+function captureFrameKyc() {
+  var vid = document.getElementById('kyc-cam');
+  if (!vid || !kycCamStream) return;
+  var canvas = document.createElement('canvas');
+  canvas.width = vid.videoWidth || 320; canvas.height = vid.videoHeight || 320;
+  canvas.getContext('2d').drawImage(vid, 0, 0);
+  kycSelfie = canvas.toDataURL('image/jpeg', 0.85);
+  stopCameraKyc();
+  showSelfieKycPreview(kycSelfie);
+}
+
+function stopCameraKyc() {
+  if (kycCamStream) { kycCamStream.getTracks().forEach(function(t){ t.stop(); }); kycCamStream = null; }
+  var vid = document.getElementById('kyc-cam');
+  if (vid) { vid.srcObject = null; vid.classList.remove('active'); }
+  var stopBtn = document.getElementById('btn-cam-stop');
+  var capBtn = document.getElementById('btn-capture-selfie');
+  if (stopBtn) stopBtn.style.display = 'none';
+  if (capBtn) capBtn.style.display = 'none';
+  if (!kycSelfie) { var ph = document.getElementById('face-placeholder'); if (ph) ph.style.display = 'block'; }
+}
+
+function handleSelfieFileKyc(input) {
+  if (!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) { kycSelfie = e.target.result; showSelfieKycPreview(kycSelfie); };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function showSelfieKycPreview(src) {
+  var prev = document.getElementById('kyc-selfie-preview');
+  if (prev) { prev.src = src; prev.style.display = 'block'; }
+  document.getElementById('face-placeholder').style.display = 'none';
+  var faceBox = document.getElementById('face-box');
+  if (faceBox) faceBox.classList.add('done');
+  var submitBtn = document.getElementById('kyc-selfie-next');
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer'; }
+  showToast('✅ Selfie ready!');
+}
+
+function submitKycInApp() {
+  document.getElementById('kyc-submit-btns').style.display = 'none';
+  document.getElementById('kyc-checks-section').style.display = 'block';
+  var expOk = kycData.expiry && new Date(kycData.expiry) >= new Date();
+  var ageOk = kycData.age && kycData.age >= 18;
+  var faceOk = !!(kycSelfie && kycPhotoFront);
+  var checks = [
+    {id:'chk-dup', delay:900, pass:true, ok:'No duplicate ✓', fail:'Duplicate detected'},
+    {id:'chk-face', delay:1800, pass:faceOk, ok:'Face matched ✓', fail:'Face mismatch'},
+    {id:'chk-exp', delay:2600, pass:expOk, ok:'Document valid ✓', fail:'Document expired'},
+    {id:'chk-country', delay:3300, pass:true, ok:'Country eligible ✓', fail:'Country not supported'},
+    {id:'chk-age', delay:4100, pass:ageOk, ok:'Age ' + (kycData.age || '?') + ' ✓', fail:'Must be 18+'},
+  ];
+  var allPassed = checks.every(function(c){ return c.pass; });
+  checks.forEach(function(chk) {
+    setTimeout(function(){
+      var el = document.getElementById(chk.id);
+      if (el) { el.textContent = chk.pass ? chk.ok : chk.fail; el.className = 'kyc-check-val ' + (chk.pass ? 'ok' : 'fail'); }
+    }, chk.delay);
+  });
+  setTimeout(function(){ showKycResult(allPassed); }, 4800);
+}
+
+function showKycResult(passed) {
+  var ra = document.getElementById('kyc-result-area');
+  if (passed) {
+    DB.updateUser(DB.currentUser, {kycStatus: 'pending'});
+    refreshUI();
+    ra.innerHTML = '<div style="margin:0 18px 16px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:18px;padding:28px 20px;text-align:center;">'
+      + '<div style="font-size:52px;margin-bottom:12px;">🎉</div>'
+      + '<div style="font-family:var(--brand);font-size:20px;font-weight:700;color:var(--green);">KYC Submitted!</div>'
+      + '<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">All automated checks passed. Your documents are under manual review. This typically takes 1–2 business days.</div>'
+      + '</div>'
+      + '<div style="margin:0 18px;"><button style="width:100%;height:46px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#22c55e,#16a34a);color:#000;font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;" onclick="closeKycModal()">← Back to App</button></div>';
+    showToast('✅ KYC submitted successfully!');
+  } else {
+    ra.innerHTML = '<div style="margin:0 18px 16px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:18px;padding:28px 20px;text-align:center;">'
+      + '<div style="font-size:52px;margin-bottom:12px;">❌</div>'
+      + '<div style="font-family:var(--brand);font-size:20px;font-weight:700;color:var(--red);">Verification Failed</div>'
+      + '<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">One or more checks failed. Please fix the issues and try again.</div>'
+      + '</div>'
+      + '<div style="margin:0 18px;display:flex;gap:10px;">'
+      + '<button style="flex:1;height:46px;border-radius:12px;border:1px solid var(--border2);background:transparent;color:var(--cyan);font-family:var(--brand);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;" onclick="closeKycModal()">Close</button>'
+      + '</div>';
+    showToast('❌ Verification failed. Please fix issues.');
+  }
+}
+
+/* ════════════
+   BOOT
+   ════════════ */
+DB._load();
+applyRefFromQuery();
+setTimeout(function() {
+  DB._load();
+  if (DB.currentUser) { showScreen('screen-app'); refreshUI(); }
+  else { showScreen('screen-login'); }
+}, 2000);
+</script>
+</body>
+</html>
